@@ -1,0 +1,14 @@
+
+logging:
+  level:
+    com.zakmouf: DEBUG
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bluetree
+    username: bluetree
+    password: bluetree2006
+    
+
+
