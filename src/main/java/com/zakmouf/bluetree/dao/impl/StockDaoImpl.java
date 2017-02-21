@@ -7,8 +7,6 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.zakmouf.bluetree.dao.StockDao;
-import com.zakmouf.bluetree.dao.mapper.DateRowMapper;
-import com.zakmouf.bluetree.dao.mapper.IntegerRowMapper;
 import com.zakmouf.bluetree.dao.mapper.PriceRowMapper;
 import com.zakmouf.bluetree.dao.mapper.StockRowMapper;
 import com.zakmouf.bluetree.domain.Price;
@@ -22,8 +20,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 	String sql = "select * from stocks where stock_id=?";
 	Object[] args = { id };
 	int[] argTypes = { Types.NUMERIC };
-	List<Stock> stocks = queryForList(sql, args, argTypes, new StockRowMapper());
-	return stocks.isEmpty() ? null : stocks.get(0);
+	return queryForObject(sql, args, argTypes, new StockRowMapper());
     }
 
     @Override
@@ -31,8 +28,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 	String sql = "select * from stocks where stock_symbol=?";
 	Object[] args = { symbol };
 	int[] argTypes = { Types.VARCHAR };
-	List<Stock> stocks = queryForList(sql, args, argTypes, new StockRowMapper());
-	return stocks.isEmpty() ? null : stocks.get(0);
+	return queryForObject(sql, args, argTypes, new StockRowMapper());
     }
 
     @Override
@@ -40,8 +36,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 	String sql = "select * from stocks order by stock_symbol";
 	Object[] args = {};
 	int[] argTypes = {};
-	List<Stock> stocks = queryForList(sql, args, argTypes, new StockRowMapper());
-	return stocks;
+	return queryForList(sql, args, argTypes, new StockRowMapper());
     }
 
     @Override
@@ -68,17 +63,17 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 	int[] argTypes = { Types.NUMERIC };
 	//
 	sql = "select count(*) from market_lnk_indice where mli_indice_id=?";
-	if (queryForList(sql, args, argTypes, new IntegerRowMapper()).get(0) > 0) {
+	if (queryForInteger(sql, args, argTypes) > 0) {
 	    return;
 	}
 	//
 	sql = "select count(*) from market_lnk_stock where mls_stock_id=?";
-	if (queryForList(sql, args, argTypes, new IntegerRowMapper()).get(0) > 0) {
+	if (queryForInteger(sql, args, argTypes) > 0) {
 	    return;
 	}
 	//
 	sql = "select count(*) from portfolio_lnk_stock where pls_stock_id=?";
-	if (queryForList(sql, args, argTypes, new IntegerRowMapper()).get(0) > 0) {
+	if (queryForInteger(sql, args, argTypes) > 0) {
 	    return;
 	}
 	//
@@ -94,8 +89,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 	String sql = "select * from prices where price_stock_id=? order by price_date";
 	Object[] args = { stock.getId() };
 	int[] argTypes = { Types.NUMERIC };
-	List<Price> prices = queryForList(sql, args, argTypes, new PriceRowMapper());
-	return prices;
+	return queryForList(sql, args, argTypes, new PriceRowMapper());
     }
 
     @Override
@@ -121,8 +115,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 	String sql = "select max(price_date) as last_date from prices where price_stock_id=?";
 	Object[] args = { stock.getId() };
 	int[] argTypes = { Types.NUMERIC };
-	List<Date> dates = queryForList(sql, args, argTypes, new DateRowMapper());
-	return dates.get(0);
+	return queryForDate(sql, args, argTypes);
     }
 
     @Override
@@ -130,8 +123,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 	String sql = "select * from prices where price_stock_id=? and price_date>=? and price_date<=? order by price_date";
 	Object[] args = { stock.getId(), fromDate, toDate };
 	int[] argTypes = { Types.NUMERIC, Types.DATE, Types.DATE };
-	List<Price> prices = queryForList(sql, args, argTypes, new PriceRowMapper());
-	return prices;
+	return queryForList(sql, args, argTypes, new PriceRowMapper());
     }
 
     @Override
@@ -142,8 +134,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 		+ "order by price_date";
 	Object[] args = { stock.getId(), stock.getId(), fromDate, stock.getId(), toDate };
 	int[] argTypes = { Types.NUMERIC, Types.NUMERIC, Types.DATE, Types.NUMERIC, Types.DATE };
-	List<Price> prices = queryForList(sql, args, argTypes, new PriceRowMapper());
-	return prices;
+	return queryForList(sql, args, argTypes, new PriceRowMapper());
     }
 
     @Override
@@ -153,8 +144,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 		+ "order by price_date";
 	Object[] args = { stock.getId(), stock.getId(), fromDate };
 	int[] argTypes = { Types.NUMERIC, Types.NUMERIC, Types.DATE };
-	List<Price> prices = queryForList(sql, args, argTypes, new PriceRowMapper());
-	return prices;
+	return queryForList(sql, args, argTypes, new PriceRowMapper());
     }
 
 }

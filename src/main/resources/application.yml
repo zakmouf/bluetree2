@@ -11,4 +11,6 @@ spring:
     password: bluetree2006
     
 
+spring.mvc.view.prefix: /jsp/
+spring.mvc.view.suffix: .jsp
 
