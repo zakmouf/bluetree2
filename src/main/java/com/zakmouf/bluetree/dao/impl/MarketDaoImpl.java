@@ -7,10 +7,8 @@ import org.springframework.stereotype.Component;
 
 import com.zakmouf.bluetree.dao.MarketDao;
 import com.zakmouf.bluetree.dao.mapper.MarketRowMapper;
-import com.zakmouf.bluetree.dao.mapper.ProfileRowMapper;
 import com.zakmouf.bluetree.dao.mapper.StockRowMapper;
 import com.zakmouf.bluetree.domain.Market;
-import com.zakmouf.bluetree.domain.Profile;
 import com.zakmouf.bluetree.domain.Stock;
 
 @Component
@@ -76,9 +74,6 @@ public class MarketDaoImpl extends BaseDaoImpl implements MarketDao {
 	//
 	sql = "delete from market_lnk_stock where mls_market_id=?";
 	update(sql, args, argTypes);
-	//
-	sql = "delete from market_lnk_profile where mlp_market_id=?";
-	update(sql, args, argTypes);
     }
 
     @Override
@@ -126,41 +121,5 @@ public class MarketDaoImpl extends BaseDaoImpl implements MarketDao {
 	    update(sql, args, argTypes);
 	}
     }
-
-    @Override
-    public List<Profile> getProfiles(Market market) {
-	String sql = "select * from market_lnk_profile, profiles where mlp_market_id=? and mlp_profile_id=profile_id order by profile_name";
-	Object[] args = { market.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	return queryForList(sql, args, argTypes, new ProfileRowMapper());
-    }
-
-    @Override
-    public void setProfiles(Market market, List<Profile> profiles) {
-	//
-	String sql = "delete from market_lnk_profile where mlp_market_id=?";
-	Object[] args = { market.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	update(sql, args, argTypes);
-	//
-	for (Profile profile : profiles) {
-	    sql = "insert into market_lnk_profile values (?, ?)";
-	    args = new Object[] { market.getId(), profile.getId() };
-	    argTypes = new int[] { Types.NUMERIC, Types.NUMERIC };
-	    update(sql, args, argTypes);
-	}
-    }
-
-    /*
-     * @Override public List<Market> getMarkets(List<Profile> profiles) { // if
-     * (profiles.isEmpty()) { return new ArrayList<Market>(); } // String sql =
-     * "select * from markets, market_lnk_profile " +
-     * "where mlp_market_id=market_id and mlp_profile_id in (";
-     * Iterator<Profile> iterator = profiles.iterator(); while
-     * (iterator.hasNext()) { Profile profile = iterator.next(); sql +=
-     * profile.getId().toString(); if (iterator.hasNext()) { sql += ","; } } sql
-     * += ")"; // List<Market> markets = jdbcTemplate.query(sql, new
-     * MarketRowMapper()); return markets; }
-     */
 
 }

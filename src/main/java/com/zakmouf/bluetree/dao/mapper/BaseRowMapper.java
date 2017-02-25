@@ -12,16 +12,14 @@ import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Portfolio;
 import com.zakmouf.bluetree.domain.Position;
 import com.zakmouf.bluetree.domain.Price;
-import com.zakmouf.bluetree.domain.Profile;
 import com.zakmouf.bluetree.domain.Stock;
-import com.zakmouf.bluetree.domain.User;
 
 public abstract class BaseRowMapper {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected Long mapLong(ResultSet rs, int rowNum) throws SQLException {
-	long value = rs.getLong(rowNum);
+    protected Long mapLong(ResultSet rs, int columnIndex) throws SQLException {
+	long value = rs.getLong(columnIndex);
 	return rs.wasNull() ? null : new Long(value);
     }
 
@@ -30,16 +28,16 @@ public abstract class BaseRowMapper {
 	return rs.wasNull() ? null : new Long(value);
     }
 
-    protected String mapString(ResultSet rs, int rowNum) throws SQLException {
-	return rs.getString(rowNum);
+    protected String mapString(ResultSet rs, int columnIndex) throws SQLException {
+	return rs.getString(columnIndex);
     }
 
     protected String mapString(ResultSet rs, String columnLabel) throws SQLException {
 	return rs.getString(columnLabel);
     }
 
-    protected Double mapDouble(ResultSet rs, int rowNum) throws SQLException {
-	double value = rs.getDouble(rowNum);
+    protected Double mapDouble(ResultSet rs, int columnIndex) throws SQLException {
+	double value = rs.getDouble(columnIndex);
 	return rs.wasNull() ? null : new Double(value);
     }
 
@@ -48,8 +46,8 @@ public abstract class BaseRowMapper {
 	return rs.wasNull() ? null : new Double(value);
     }
 
-    protected Integer mapInteger(ResultSet rs, int rowNum) throws SQLException {
-	int value = rs.getInt(rowNum);
+    protected Integer mapInteger(ResultSet rs, int columnIndex) throws SQLException {
+	int value = rs.getInt(columnIndex);
 	return rs.wasNull() ? null : new Integer(value);
     }
 
@@ -58,8 +56,8 @@ public abstract class BaseRowMapper {
 	return rs.wasNull() ? null : new Integer(value);
     }
 
-    protected Boolean mapBoolean(ResultSet rs, int rowNum) throws SQLException {
-	boolean value = rs.getBoolean(rowNum);
+    protected Boolean mapBoolean(ResultSet rs, int columnIndex) throws SQLException {
+	boolean value = rs.getBoolean(columnIndex);
 	return rs.wasNull() ? null : Boolean.valueOf(value);
     }
 
@@ -68,8 +66,8 @@ public abstract class BaseRowMapper {
 	return rs.wasNull() ? null : Boolean.valueOf(value);
     }
 
-    protected Date mapDate(ResultSet rs, int rowNum) throws SQLException {
-	java.sql.Date date = rs.getDate(rowNum);
+    protected Date mapDate(ResultSet rs, int columnIndex) throws SQLException {
+	java.sql.Date date = rs.getDate(columnIndex);
 	return rs.wasNull() ? null : new Date(date.getTime());
     }
 
@@ -78,8 +76,8 @@ public abstract class BaseRowMapper {
 	return rs.wasNull() ? null : new Date(date.getTime());
     }
 
-    protected Date mapTimestamp(ResultSet rs, int rowNum) throws SQLException {
-	Timestamp timestamp = rs.getTimestamp(rowNum);
+    protected Date mapTimestamp(ResultSet rs, int columnIndex) throws SQLException {
+	Timestamp timestamp = rs.getTimestamp(columnIndex);
 	return rs.wasNull() ? null : new Date(timestamp.getTime());
     }
 
@@ -96,29 +94,12 @@ public abstract class BaseRowMapper {
 	return market;
     }
 
-    protected Profile mapProfile(ResultSet rs) throws SQLException {
-	Profile profile = new Profile();
-	profile.setId(mapLong(rs, "profile_id"));
-	profile.setName(mapString(rs, "profile_name"));
-	profile.setIsDefault(mapBoolean(rs, "profile_default"));
-	return profile;
-    }
-
     protected Stock mapStock(ResultSet rs) throws SQLException {
 	Stock stock = new Stock();
 	stock.setId(mapLong(rs, "stock_id"));
 	stock.setSymbol(mapString(rs, "stock_symbol"));
 	stock.setName(mapString(rs, "stock_name"));
 	return stock;
-    }
-
-    protected User mapUser(ResultSet rs) throws SQLException {
-	User user = new User();
-	user.setId(mapLong(rs, "user_id"));
-	user.setLogin(mapString(rs, "user_login"));
-	user.setPassword(mapString(rs, "user_password"));
-	user.setMail(mapString(rs, "user_mail"));
-	return user;
     }
 
     protected Price mapPrice(ResultSet rs) throws SQLException {

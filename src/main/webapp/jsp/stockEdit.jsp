@@ -1,8 +1,8 @@
-<%@ include file="/jsp/admin/common/taglibs.jsp"%>
+<%@ include file="/jsp/common/taglibs.jsp"%>
 
-<c:import url="/jsp/admin/common/header.jsp" />
+<c:import url="/jsp/common/header.jsp" />
 
-<c:import url="/jsp/admin/common/menu.jsp" />
+<c:import url="/jsp/common/menu.jsp" />
 
 <table>
 	<tr>
@@ -10,7 +10,7 @@
 	</tr>
 </table>
 
-<form:form action="/admin/stock/edit?stock=${param.stock}" method="post" modelAttribute="form">
+<form:form action="/stock/edit?stock=${param.stock}" method="post" modelAttribute="form">
 
 <table>
 	<tr>
@@ -31,4 +31,4 @@
 
 </form:form>
 
-<c:import url="/jsp/admin/common/footer.jsp" />
+<c:import url="/jsp/common/footer.jsp" />

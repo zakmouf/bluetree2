@@ -12,7 +12,6 @@ import com.zakmouf.bluetree.dao.mapper.PositionRowMapper;
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Portfolio;
 import com.zakmouf.bluetree.domain.Position;
-import com.zakmouf.bluetree.domain.User;
 
 @Component
 public class PortfolioDaoImpl extends BaseDaoImpl implements PortfolioDao {
@@ -23,6 +22,14 @@ public class PortfolioDaoImpl extends BaseDaoImpl implements PortfolioDao {
 	Object[] args = { id };
 	int[] argTypes = { Types.NUMERIC };
 	return queryForObject(sql, args, argTypes, new PortfolioRowMapper());
+    }
+
+    @Override
+    public List<Portfolio> getPortfolios() {
+	String sql = "select * from portfolios order by portfolio_name";
+	Object[] args = {};
+	int[] argTypes = {};
+	return queryForList(sql, args, argTypes, new PortfolioRowMapper());
     }
 
     @Override
@@ -54,32 +61,7 @@ public class PortfolioDaoImpl extends BaseDaoImpl implements PortfolioDao {
 	sql = "delete from portfolio_lnk_stock where pls_portfolio_id=?";
 	update(sql, args, argTypes);
 	//
-	sql = "delete from portfolio_lnk_user where plu_portfolio_id=?";
-	update(sql, args, argTypes);
-	//
 	sql = "delete from portfolio_lnk_market where plm_portfolio_id=?";
-	update(sql, args, argTypes);
-    }
-
-    @Override
-    public List<Portfolio> getPortfolios(User user) {
-	String sql = "select * from portfolios, portfolio_lnk_user where portfolio_id=plu_portfolio_id and plu_user_id=? order by portfolio_name";
-	Object[] args = { user.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	return queryForList(sql, args, argTypes, new PortfolioRowMapper());
-    }
-
-    @Override
-    public void setUser(Portfolio portfolio, User user) {
-	//
-	String sql = "delete from portfolio_lnk_user where plu_portfolio_id=?";
-	Object[] args = { portfolio.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	update(sql, args, argTypes);
-	//
-	sql = "insert into portfolio_lnk_user values (?, ?)";
-	args = new Object[] { portfolio.getId(), user.getId() };
-	argTypes = new int[] { Types.NUMERIC, Types.NUMERIC };
 	update(sql, args, argTypes);
     }
 

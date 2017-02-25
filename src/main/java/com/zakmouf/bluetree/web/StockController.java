@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +31,7 @@ import com.zakmouf.bluetree.domain.Stock;
 import com.zakmouf.bluetree.util.PriceUtil;
 
 @Controller
-@RequestMapping("/admin/stock")
+@RequestMapping("/stock")
 public class StockController extends BaseController {
 
     private StockDao stockDao;
@@ -45,7 +44,7 @@ public class StockController extends BaseController {
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getList() {
 	List<Stock> stocks = stockDao.getStocks();
-	ModelAndView mav = new ModelAndView("admin/stock/list");
+	ModelAndView mav = new ModelAndView("stockList");
 	mav.getModel().put("stocks", stocks);
 	return mav;
     }
@@ -55,8 +54,8 @@ public class StockController extends BaseController {
 	StockForm form = new StockForm();
 	form.setSymbol("symbol");
 	form.setName("name");
-	ModelAndView mav = new ModelAndView("/admin/stock/new");
-	mav.getModel().put("stock", form);
+	ModelAndView mav = new ModelAndView("stockNew");
+	mav.getModel().put("form", form);
 	return mav;
     }
 
@@ -65,7 +64,7 @@ public class StockController extends BaseController {
 	String symbol = form.getSymbol();
 	String name = form.getName();
 	if (stockDao.findStock(symbol) != null) {
-	    ModelAndView mav = new ModelAndView("/admin/stock/new");
+	    ModelAndView mav = new ModelAndView("stockNew");
 	    mav.getModel().put("form", form);
 	    return mav;
 	}
@@ -73,7 +72,7 @@ public class StockController extends BaseController {
 	stock.setSymbol(symbol);
 	stock.setName(name);
 	stockDao.insertStock(stock);
-	ModelAndView mav = new ModelAndView("redirect:/admin/stock");
+	ModelAndView mav = new ModelAndView("redirect:/stock");
 	return mav;
     }
 
@@ -83,7 +82,7 @@ public class StockController extends BaseController {
 	StockForm form = new StockForm();
 	form.setSymbol(stock.getSymbol());
 	form.setName(stock.getName());
-	ModelAndView mav = new ModelAndView("/admin/stock/edit");
+	ModelAndView mav = new ModelAndView("stockEdit");
 	mav.getModel().put("form", form);
 	return mav;
     }
@@ -95,7 +94,7 @@ public class StockController extends BaseController {
 	Stock stock = stockDao.findStock(symbol);
 	if (stock != null) {
 	    if (!stock.getId().equals(stockId)) {
-		ModelAndView mav = new ModelAndView("/admin/stock/edit");
+		ModelAndView mav = new ModelAndView("stockEdit");
 		mav.getModel().put("form", form);
 		return mav;
 	    }
@@ -105,7 +104,7 @@ public class StockController extends BaseController {
 	stock.setName(name);
 	logger.info(msg("update stock <{0}>", stock));
 	stockDao.updateStock(stock);
-	ModelAndView mav = new ModelAndView("redirect:/admin/stock");
+	ModelAndView mav = new ModelAndView("redirect:/stock");
 	return mav;
     }
 
@@ -114,7 +113,7 @@ public class StockController extends BaseController {
 	Stock stock = stockDao.findStock(stockId);
 	logger.info(msg("delete stock <{0}>", stock));
 	stockDao.deleteStock(stock);
-	ModelAndView mav = new ModelAndView("redirect:/admin/stock");
+	ModelAndView mav = new ModelAndView("redirect:/stock");
 	return mav;
     }
 
@@ -135,7 +134,7 @@ public class StockController extends BaseController {
 	}
 	JFreeChart chart = generateChart(stock, prices);
 	request.getSession().setAttribute("stock", chart);
-	ModelAndView mav = new ModelAndView("/admin/stock/view");
+	ModelAndView mav = new ModelAndView("stockView");
 	mav.getModel().put("form", form);
 	return mav;
     }

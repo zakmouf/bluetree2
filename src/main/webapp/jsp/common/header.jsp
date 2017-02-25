@@ -1,5 +1,6 @@
 <%@ include file="/jsp/common/taglibs.jsp"%>
 
+<!DOCTYPE html>
 <html>
 <head>
 <title>BLUE TREE FINANCE</title>

@@ -88,17 +88,6 @@ create table portfolio_lnk_market (
 create index ix_portfolio_lnk_market_1 on portfolio_lnk_market (plm_portfolio_id);
 create index ix_portfolio_lnk_market_2 on portfolio_lnk_market (plm_market_id);
 
-drop table if exists portfolio_lnk_user;
-
-create table portfolio_lnk_user (
-  plu_portfolio_id int not null,
-  plu_user_id int not null,
-  primary key (plu_portfolio_id, plu_user_id)
-);
-
-create index ix_portfolio_lnk_user_1 on portfolio_lnk_user (plu_portfolio_id);
-create index ix_portfolio_lnk_user_2 on portfolio_lnk_user (plu_user_id);
-
 drop table if exists portfolio_lnk_stock;
 
 create table portfolio_lnk_stock (

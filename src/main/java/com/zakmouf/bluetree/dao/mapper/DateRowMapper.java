@@ -10,7 +10,7 @@ public class DateRowMapper extends BaseRowMapper implements RowMapper<Date> {
 
     @Override
     public Date mapRow(ResultSet rs, int rowNum) throws SQLException {
-	return mapDate(rs, rowNum);
+	return mapDate(rs, 1);
     }
 
 }

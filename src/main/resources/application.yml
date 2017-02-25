@@ -2,6 +2,7 @@
 logging:
   level:
     com.zakmouf: DEBUG
+    org.springframwork: TRACE
 
 spring:
   datasource:
