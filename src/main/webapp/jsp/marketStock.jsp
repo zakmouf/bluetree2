@@ -6,24 +6,16 @@
 
 <table>
   <tr>
-    <td>Edit stock</td>
+    <td>Stocks market</td>
   </tr>
 </table>
 
-<form:form action="/stock/edit?stock=${param.stock}" method="post" modelAttribute="form">
+<form:form action="/market/stock?market=${param.market}" method="post" modelAttribute="form">
 
   <table>
     <tr>
-      <td>Symbol :</td>
-      <td><form:input path="symbol" disabled="true" /></td>
+      <td><form:textarea path="text" rows="15" cols="40" /></td>
     </tr>
-    <tr>
-      <td>Name :</td>
-      <td><form:input path="name" /></td>
-    </tr>
-  </table>
-
-  <table>
     <tr>
       <td><input type="submit" value="Ok" /></td>
     </tr>

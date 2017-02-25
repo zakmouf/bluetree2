@@ -5,9 +5,9 @@
 <c:import url="/jsp/common/menu.jsp" />
 
 <table>
-	<tr>
-		<td><a href="<c:url value="/market/new"/>">New market</a></td>
-	</tr>
+  <tr>
+    <td><a href="<c:url value="/market/new"/>">New market</a></td>
+  </tr>
 </table>
 
 <table>

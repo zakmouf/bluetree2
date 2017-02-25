@@ -5,9 +5,9 @@
 <c:import url="/jsp/common/menu.jsp" />
 
 <table>
-	<tr>
-		<td>Edit market</td>
-	</tr>
+  <tr>
+    <td>Edit market</td>
+  </tr>
 </table>
 
 <form:form action="/market/edit?market=${param.market}" method="post" modelAttribute="form">

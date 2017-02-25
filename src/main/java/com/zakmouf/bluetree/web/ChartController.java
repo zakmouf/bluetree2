@@ -12,10 +12,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,24 +23,14 @@ public class ChartController extends BaseController {
 
     @RequestMapping(method = RequestMethod.GET)
     public void getChart(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
 	String name = request.getParameter("name");
-	JFreeChart chart = null;
-	if (!StringUtils.isBlank(name)) {
-	    chart = (JFreeChart) request.getSession().getAttribute(name);
-	}
-	if (chart == null) {
-	    chart = ChartFactory.createTimeSeriesChart(null, null, null, new TimeSeriesCollection(), false, false,
-		    false);
-	}
-
 	int width = Integer.parseInt(request.getParameter("width"));
 	int height = Integer.parseInt(request.getParameter("height"));
+	JFreeChart chart = (JFreeChart) request.getSession().getAttribute(name);
 	BufferedImage image = generateImage(chart, width, height);
 	byte[] bytes = encodeImage(image);
 	response.setContentType("image/jpeg");
 	response.getOutputStream().write(bytes);
-
     }
 
     protected BufferedImage generateImage(JFreeChart chart, int width, int height) {
