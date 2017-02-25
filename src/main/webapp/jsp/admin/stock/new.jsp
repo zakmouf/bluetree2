@@ -10,16 +10,16 @@
 	</tr>
 </table>
 
-<form action="<c:url value="/admin/stock/new.htm"/>" method="post">
+<form:form action="/admin/stock/new" method="post" modelAttribute="form">
 
 <table>
 	<tr>
 		<td>Symbol : </td>
-		<td><input type="text" name="symbol" value="<c:out value="${stockForm.symbol}"/>" /></td>
+		<td><form:input path="symbol"/></td>
 	</tr>
 	<tr>
 		<td>Name : </td>
-		<td><input type="text" name="name" value="<c:out value="${stockForm.name}"/>" /></td>
+		<td><form:input path="name"/></td>
 	</tr>
 </table>
 
@@ -29,10 +29,6 @@
 	</tr>
 </table>
 
-</form>
-
-<c:import url="/jsp/admin/common/error.jsp">
-	<c:param name="formName">stockForm</c:param>
-</c:import>
+</form:form>
 
 <c:import url="/jsp/admin/common/footer.jsp" />

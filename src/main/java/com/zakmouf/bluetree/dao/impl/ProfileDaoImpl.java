@@ -79,14 +79,6 @@ public class ProfileDaoImpl extends BaseDaoImpl implements ProfileDao {
     }
 
     @Override
-    public Profile getDefaultProfile() {
-	String sql = "select * from profiles where profile_default=1";
-	Object[] args = {};
-	int[] argTypes = {};
-	return queryForObject(sql, args, argTypes, new ProfileRowMapper());
-    }
-
-    @Override
     public void setDefaultProfile(Profile profile) {
 	//
 	String sql = "update profiles set profile_default=0";

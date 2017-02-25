@@ -10,12 +10,12 @@
 	</tr>
 </table>
 
-<form action="<c:url value="/admin/profile/edit.htm?profile=${param.profile}"/>" method="post">
+<form:form action="/admin/profile/edit?profile=${param.profile}" method="post" modelAttribute="form">
 
 <table>
 	<tr>
 		<td>Name : </td>
-		<td><input type="text" name="name" value="<c:out value="${profileForm.name}"/>" /></td>
+		<td><form:input path="name"/></td>
 	</tr>
 </table>
 
@@ -25,10 +25,6 @@
 	</tr>
 </table>
 
-</form>
-
-<c:import url="/jsp/admin/common/error.jsp">
-	<c:param name="formName">profileForm</c:param>
-</c:import>
+</form:form>
 
 <c:import url="/jsp/admin/common/footer.jsp" />

@@ -6,37 +6,36 @@
 
 <table>
 	<tr>
-		<td><a href="<c:url value="/admin/stock/price.htm?stock=${param.stock}"/>">Populate</a></td>
-		<td><a href="<c:url value="/admin/stock/clear.htm?stock=${param.stock}"/>">Clear</a></td>
-		<td><a href="<c:url value="/admin/stock/edit.htm?stock=${param.stock}"/>">Edit</a></td>
-		<td><a href="<c:url value="/admin/stock/delete.htm?stock=${param.stock}"/>">Delete</a></td>
+		<td><a href="<c:url value="/admin/stock/clear?stock=${param.stock}"/>">Clear</a></td>
+		<td><a href="<c:url value="/admin/stock/edit?stock=${param.stock}"/>">Edit</a></td>
+		<td><a href="<c:url value="/admin/stock/delete?stock=${param.stock}"/>">Delete</a></td>
 	</tr>
 </table>
 
 <table>
 	<tr>
-		<td><c:out value="${stockViewForm.viewStock.symbol}" /> ( <c:out value="${stockViewForm.viewStock.name}" /> )</td>
+		<td><c:out value="${form.stock.symbol}" /> ( <c:out value="${form.stock.name}" /> )</td>
 	</tr>
 </table>
 
 <table>
 	<tr>
 		<td>Count :</td>
-		<td><c:out value="${stockViewForm.count}" /></td>
+		<td><c:out value="${form.count}" /></td>
 	</tr>
 	<tr>
 		<td>First date :</td>
-		<td><fmt:formatDate value="${stockViewForm.firstDate}" pattern="yyyy-MM-dd" /></td>
+		<td><fmt:formatDate value="${form.firstDate}" pattern="yyyy-MM-dd" /></td>
 	</tr>
 	<tr>
 		<td>Last date :</td>
-		<td><fmt:formatDate value="${stockViewForm.lastDate}" pattern="yyyy-MM-dd" /></td>
+		<td><fmt:formatDate value="${form.lastDate}" pattern="yyyy-MM-dd" /></td>
 	</tr>
 </table>
 
 <table>
 	<tr>
-		<td><img src="<c:url value="/chart.htm?name=stock.view&width=400&height=200"/>" width="400" height="200" /></td>
+		<td><img src="<c:url value="/chart?name=stock&width=400&height=200"/>" width="400" height="200" /></td>
 	</tr>
 </table>
 
@@ -45,17 +44,17 @@
 		<td>View</td>
 	</tr>
 </table>
-
-<form action="<c:url value="/admin/stock/view.htm?stock=${param.stock}"/>" method="post">
+ 
+<form:form action="/admin/stock/view?stock=${param.stock}" method="post" modelAttribute="form">
 
 <table>
 	<tr>
 		<td>From :</td>
-		<td><input type="text" name="fromDate" value="<c:out value="${stockViewForm.fromDate}" />" /></td>
+		<td><form:input path="fromDate"/></td>
 	</tr>
 	<tr>
 		<td>To :</td>
-		<td><input type="text" name="toDate" value="<c:out value="${stockViewForm.toDate}" />" /></td>
+		<td><form:input path="toDate"/></td>
 	</tr>
 </table>
 
@@ -65,10 +64,6 @@
 	</tr>
 </table>
 
-</form>
-
-<c:import url="/jsp/admin/common/error.jsp">
-	<c:param name="formName">stockViewForm</c:param>
-</c:import>
+</form:form>
 
 <c:import url="/jsp/admin/common/footer.jsp" />

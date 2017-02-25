@@ -100,6 +100,7 @@ public abstract class BaseRowMapper {
 	Profile profile = new Profile();
 	profile.setId(mapLong(rs, "profile_id"));
 	profile.setName(mapString(rs, "profile_name"));
+	profile.setIsDefault(mapBoolean(rs, "profile_default"));
 	return profile;
     }
 

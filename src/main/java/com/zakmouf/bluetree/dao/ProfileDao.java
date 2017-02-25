@@ -18,8 +18,6 @@ public interface ProfileDao {
 
     void deleteProfile(Profile profile);
 
-    Profile getDefaultProfile();
-
     void setDefaultProfile(Profile profile);
 
 }

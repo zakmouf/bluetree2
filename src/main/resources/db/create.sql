@@ -1,45 +1,16 @@
 
---create database bluetree;
---grant all privileges on *.* to bluetree@localhost identified by 'bluetree2006' with grant option;
+-- mysqld --initialize-insecure
+-- mysqld --console
+-- mysql -u root
+-- set password for 'root'@'localhost' = password ('mysql');
+-- mysqladmin -u root -p shutdown
 
-drop table if exists users;
-
-create table users (
-  user_id int auto_increment primary key,
-  user_login varchar(20) unique not null,
-  user_password varchar(20) not null,
-  user_mail varchar(255)
-);
-
-drop table if exists user_lnk_profile;
-
-create table user_lnk_profile (
-  ulp_user_id int not null,
-  ulp_profile_id int not null,
-  primary key (ulp_user_id, ulp_profile_id)
-);
-
-create index ix_user_lnk_profile_1 on user_lnk_profile (ulp_user_id);
-create index ix_user_lnk_profile_2 on user_lnk_profile (ulp_profile_id);
-
-drop table if exists profiles;
-
-create table profiles (
-  profile_id int auto_increment primary key,
-  profile_name varchar(50) unique not null,
-  profile_default bool not null
-);
-
-drop table if exists market_lnk_profile;
-
-create table market_lnk_profile (
-  mlp_market_id int not null,
-  mlp_profile_id int not null,
-  primary key (mlp_market_id, mlp_profile_id)
-);
-
-create index ix_market_lnk_profile_1 on market_lnk_profile (mlp_market_id);
-create index ix_market_lnk_profile_2 on market_lnk_profile (mlp_profile_id);
+-- drop database if exists bluetree;
+-- create database bluetree character set 'utf8';
+-- drop user if exists 'bluetree'@'localhost';
+-- create user 'bluetree'@'localhost';
+-- set password for 'bluetree'@'localhost' = password ('mysql');
+-- grant all privileges on bluetree.* to 'bluetree'@'localhost' with grant option;
 
 drop table if exists market_lnk_indice;
 
