@@ -2,7 +2,6 @@
 logging:
   level:
     com.zakmouf: DEBUG
-    org.springframwork: TRACE
 
 spring:
   datasource:
@@ -10,7 +9,6 @@ spring:
     url: jdbc:mysql://localhost:3306/bluetree
     username: bluetree
     password: mysql
-    
 
 spring.mvc.view.prefix: /jsp/
 spring.mvc.view.suffix: .jsp

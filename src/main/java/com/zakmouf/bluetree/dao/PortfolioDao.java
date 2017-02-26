@@ -10,6 +10,8 @@ public interface PortfolioDao {
 
     Portfolio findPortfolio(Long id);
 
+    Portfolio findPortfolio(String name);
+
     List<Portfolio> getPortfolios();
 
     void insertPortfolio(Portfolio portfolio);

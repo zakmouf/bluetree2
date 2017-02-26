@@ -16,32 +16,12 @@ public class Portfolio extends BaseEntity {
 
     private Integer size;
 
-    private Boolean executed;
-
-    private String error;
-
     public Double getBeta() {
 	return beta;
     }
 
     public void setBeta(Double beta) {
 	this.beta = beta;
-    }
-
-    public String getError() {
-	return error;
-    }
-
-    public void setError(String error) {
-	this.error = error;
-    }
-
-    public Boolean getExecuted() {
-	return executed;
-    }
-
-    public void setExecuted(Boolean executed) {
-	this.executed = executed;
     }
 
     public Date getFromDate() {

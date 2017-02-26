@@ -5,11 +5,11 @@ public class MarketStockForm {
     private String text;
 
     public String getText() {
-        return text;
+	return text;
     }
 
     public void setText(String text) {
-        this.text = text;
+	this.text = text;
     }
 
 }

@@ -70,12 +70,8 @@ create table portfolios (
   portfolio_from_date date not null,
   portfolio_to_date date not null,
   portfolio_beta double not null, 
-  portfolio_size int not null,
-  portfolio_executed bool not null,
-  portfolio_error varchar(255) null
+  portfolio_size int not null
 );
-
-create index ix_portfolios_1 on portfolios (portfolio_executed);
 
 drop table if exists portfolio_lnk_market;
 

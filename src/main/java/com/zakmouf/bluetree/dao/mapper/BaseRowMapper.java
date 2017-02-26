@@ -117,8 +117,6 @@ public abstract class BaseRowMapper {
 	portfolio.setToDate(mapDate(rs, "portfolio_to_date"));
 	portfolio.setBeta(mapDouble(rs, "portfolio_beta"));
 	portfolio.setSize(mapInteger(rs, "portfolio_size"));
-	portfolio.setExecuted(mapBoolean(rs, "portfolio_executed"));
-	portfolio.setError(mapString(rs, "portfolio_error"));
 	return portfolio;
     }
 

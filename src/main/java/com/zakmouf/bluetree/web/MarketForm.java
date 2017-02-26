@@ -9,11 +9,11 @@ public class MarketForm {
     private List<Stock> stocks;
 
     public List<Stock> getStocks() {
-        return stocks;
+	return stocks;
     }
 
     public void setStocks(List<Stock> stocks) {
-        this.stocks = stocks;
+	this.stocks = stocks;
     }
 
     private String name;
@@ -23,27 +23,27 @@ public class MarketForm {
     private Long indiceId;
 
     public Long getIndiceId() {
-        return indiceId;
+	return indiceId;
     }
 
     public void setIndiceId(Long indiceId) {
-        this.indiceId = indiceId;
+	this.indiceId = indiceId;
     }
 
     public String getName() {
-        return name;
+	return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public Double getRiskless() {
-        return riskless;
+	return riskless;
     }
 
     public void setRiskless(Double riskless) {
-        this.riskless = riskless;
+	this.riskless = riskless;
     }
 
 }
