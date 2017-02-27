@@ -50,7 +50,7 @@ public class MarketController extends BaseController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getList(ModelMap model) {
-	List<Market> markets = marketDao.getMarkets();
+	List<Market> markets = marketDao.findAll();
 	ModelAndView mav = new ModelAndView("marketList");
 	mav.getModel().put("markets", markets);
 	return mav;
@@ -58,110 +58,113 @@ public class MarketController extends BaseController {
 
     @RequestMapping(value = "/new", method = RequestMethod.GET)
     public ModelAndView getNew() {
+
+	List<Stock> stocks = stockDao.findAll();
+
 	MarketForm form = new MarketForm();
-	List<Stock> stocks = stockDao.getStocks();
-	form.setStocks(stocks);
 	form.setName("name");
 	form.setRiskless(0.0D);
 	if (stocks.isEmpty()) {
 	    form.setIndiceId(stocks.get(0).getId());
 	}
+
 	ModelAndView mav = new ModelAndView("marketNew");
+	mav.getModel().put("stocks", stocks);
 	mav.getModel().put("form", form);
 	return mav;
+
     }
 
     @RequestMapping(value = "/new", method = RequestMethod.POST)
     public ModelAndView submitNew(@ModelAttribute MarketForm form) {
 	String name = form.getName();
-	Double riskless = form.getRiskless();
-	Long indiceId = form.getIndiceId();
-	if (marketDao.findMarket(name) != null) {
+	if (marketDao.findByName(name) != null) {
+	    List<Stock> stocks = stockDao.findAll();
 	    ModelAndView mav = new ModelAndView("marketNew");
-	    List<Stock> stocks = stockDao.getStocks();
-	    form.setStocks(stocks);
+	    mav.getModel().put("stocks", stocks);
 	    mav.getModel().put("form", form);
 	    return mav;
 	}
 	Market market = new Market();
 	market.setName(name);
-	market.setRiskless(riskless);
-	Stock indice = stockDao.findStock(indiceId);
+	market.setRiskless(form.getRiskless());
+	Stock indice = stockDao.findById(form.getIndiceId());
+	market.setIndice(indice);
 	logger.info(msg("insert market <{0}>", market));
-	marketDao.insertMarket(market);
-	marketDao.setIndice(market, indice);
+	marketDao.insert(market);
 	ModelAndView mav = new ModelAndView("redirect:/market/view?market=" + market.getId());
 	return mav;
     }
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     public ModelAndView getView(@RequestParam("market") Long marketId, HttpServletRequest request) {
-	Market market = marketDao.findMarket(marketId);
-	Stock indice = marketDao.getIndice(market);
-	List<Price> prices = stockDao.getPrices(indice);
+	Market market = marketDao.findById(marketId);
+	Stock indice = market.getIndice();
+	List<Price> prices = stockDao.findPrices(indice);
 	generateChart(request, "market", prices);
 	List<Stock> stocks = marketDao.getStocks(market);
 	ModelAndView mav = new ModelAndView("marketView");
 	mav.getModel().put("market", market);
-	mav.getModel().put("indice", indice);
 	mav.getModel().put("stocks", stocks);
 	return mav;
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
     public ModelAndView getEdit(@RequestParam("market") Long marketId) {
-	Market market = marketDao.findMarket(marketId);
+
+	Market market = marketDao.findById(marketId);
+
+	List<Stock> stocks = stockDao.findAll();
+
 	MarketForm form = new MarketForm();
 	form.setName(market.getName());
 	form.setRiskless(market.getRiskless());
-	Stock indice = marketDao.getIndice(market);
+	Stock indice = market.getIndice();
 	form.setIndiceId(indice.getId());
-	List<Stock> stocks = stockDao.getStocks();
-	form.setStocks(stocks);
+
 	ModelAndView mav = new ModelAndView("marketEdit");
+	mav.getModel().put("stocks", stocks);
 	mav.getModel().put("form", form);
 	return mav;
+
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public ModelAndView submitEdit(@RequestParam("market") Long marketId, @ModelAttribute MarketForm form) {
 	String name = form.getName();
-	Double riskless = form.getRiskless();
-	Long indiceId = form.getIndiceId();
-	Market market = marketDao.findMarket(name);
+	Market market = marketDao.findByName(name);
 	if (market != null) {
 	    if (!market.getId().equals(marketId)) {
-		List<Stock> stocks = stockDao.getStocks();
-		form.setStocks(stocks);
+		List<Stock> stocks = stockDao.findAll();
 		ModelAndView mav = new ModelAndView("marketEdit");
+		mav.getModel().put("stocks", stocks);
 		mav.getModel().put("form", form);
 		return mav;
 	    }
 	}
-	market = marketDao.findMarket(marketId);
+	market = marketDao.findById(marketId);
 	market.setName(name);
-	market.setRiskless(riskless);
-	Stock indice = stockDao.findStock(indiceId);
-	marketDao.setIndice(market, indice);
+	market.setRiskless(form.getRiskless());
+	Stock indice = stockDao.findById(form.getIndiceId());
+	market.setIndice(indice);
 	logger.info(msg("update market <{0}>", market));
-	marketDao.updateMarket(market);
-	marketDao.setIndice(market, indice);
+	marketDao.update(market);
 	ModelAndView mav = new ModelAndView("redirect:/market/view?market=" + market.getId());
 	return mav;
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public ModelAndView doDelete(@RequestParam("market") Long marketId) {
-	Market market = marketDao.findMarket(marketId);
+	Market market = marketDao.findById(marketId);
 	logger.info(msg("delete market <{0}>", market));
-	marketDao.deleteMarket(market);
+	marketDao.delete(market);
 	ModelAndView mav = new ModelAndView("redirect:/market");
 	return mav;
     }
 
     @RequestMapping(value = "/stock", method = RequestMethod.GET)
     public ModelAndView getStock(@RequestParam("market") Long marketId) {
-	Market market = marketDao.findMarket(marketId);
+	Market market = marketDao.findById(marketId);
 	MarketStockForm form = new MarketStockForm();
 	form.setText("symbol");
 	ModelAndView mav = new ModelAndView("marketStock");
@@ -172,18 +175,18 @@ public class MarketController extends BaseController {
 
     @RequestMapping(value = "/stock", method = RequestMethod.POST)
     public ModelAndView submitStock(@RequestParam("market") Long marketId, @ModelAttribute MarketStockForm form) {
-	Market market = marketDao.findMarket(marketId);
+	Market market = marketDao.findById(marketId);
 	String[] symbols = StringUtils.split(form.getText());
 	List<Stock> stocks = new ArrayList<Stock>();
 	for (String symbol : symbols) {
-	    Stock stock = stockDao.findStock(symbol);
+	    Stock stock = stockDao.findBySymbol(symbol);
 	    if (stock == null) {
 		stock = new Stock();
 		stock.setSymbol(symbol);
 		;
 		stock.setName("undefined");
 		logger.info(msg("insert stock <{0}>", stock));
-		stockDao.insertStock(stock);
+		stockDao.insert(stock);
 	    }
 	    stocks.add(stock);
 	}
@@ -195,7 +198,7 @@ public class MarketController extends BaseController {
 
     @RequestMapping(value = "/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@RequestParam("market") Long marketId) {
-	Market market = marketDao.findMarket(marketId);
+	Market market = marketDao.findById(marketId);
 	MarketUpdateForm form = new MarketUpdateForm();
 	form.setStartDate("2012-12-01");
 	form.setIncrement(250);
@@ -207,12 +210,12 @@ public class MarketController extends BaseController {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public ModelAndView submitUpdate(@RequestParam("market") Long marketId, @ModelAttribute MarketUpdateForm form) {
-	Market market = marketDao.findMarket(marketId);
+	Market market = marketDao.findById(marketId);
 	String startDateStr = form.getStartDate();
 	Date startDate = parseDate(startDateStr);
 	Integer increment = form.getIncrement();
 	List<Stock> stocks = new ArrayList<Stock>();
-	stocks.add(marketDao.getIndice(market));
+	stocks.add(market.getIndice());
 	stocks.addAll(marketDao.getStocks(market));
 	for (Stock stock : stocks) {
 	    updateStock(stock, startDate, increment);
@@ -223,7 +226,7 @@ public class MarketController extends BaseController {
     }
 
     private void updateStock(Stock stock, Date startDate, Integer increment) {
-	Date lastDate = stockDao.getLastDate(stock);
+	Date lastDate = stockDao.findLastDate(stock);
 	if (lastDate == null) {
 	    lastDate = startDate;
 	} else {
@@ -256,7 +259,7 @@ public class MarketController extends BaseController {
 	if (logger.isDebugEnabled()) {
 	    logger.debug(msg("{0} : {1} -> {2} : {3}", stock, formatDate(fromDate), formatDate(toDate), prices.size()));
 	}
-	stockDao.addPrices(stock, prices);
+	stockDao.insertPrices(stock, prices);
     }
 
     private String getLink(Stock stock, Date fromDate, Date toDate) {

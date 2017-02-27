@@ -14,11 +14,13 @@
   <tr>
     <th>Name</th>
     <th>Riskless</th>
+    <th>Indice</th>
   </tr>
   <c:forEach items="${markets}" var="market">
     <tr>
       <td><a href="<c:url value="/market/view?market=${market.id}"/>"><c:out value="${market.name}" /></a></td>
       <td><c:out value="${market.riskless}" /></td>
+      <td><a href="<c:url value="/stock/view?stock=${market.indice.id}"/>"><c:out value="${market.indice.symbol}" /></a> ( <c:out value="${market.indice.name}" /> )</td>
     </tr>
   </c:forEach>
 </table>

@@ -52,7 +52,7 @@ public class PortfolioController extends BaseController {
     @RequestMapping(value = "/new", method = RequestMethod.GET)
     public ModelAndView getNew() {
 	PortfolioForm form = new PortfolioForm();
-	List<Market> markets = marketDao.getMarkets();
+	List<Market> markets = marketDao.findAll();
 	form.setMarkets(markets);
 	form.setName("name");
 	form.setFromDateStr("2013-01-01");
@@ -71,7 +71,7 @@ public class PortfolioController extends BaseController {
     public ModelAndView submitNew(@ModelAttribute PortfolioForm form) {
 	String name = form.getName();
 	if (portfolioDao.findPortfolio(name) != null) {
-	    List<Market> markets = marketDao.getMarkets();
+	    List<Market> markets = marketDao.findAll();
 	    form.setMarkets(markets);
 	    ModelAndView mav = new ModelAndView("portfolioNew");
 	    mav.getModel().put("form", form);
@@ -83,7 +83,7 @@ public class PortfolioController extends BaseController {
 	portfolio.setToDate(parseDate(form.getToDateStr()));
 	portfolio.setBeta(form.getBeta());
 	portfolio.setSize(form.getSize());
-	Market market = marketDao.findMarket(form.getMarketId());
+	Market market = marketDao.findById(form.getMarketId());
 	logger.info(msg("insert portfolio <{0}>", portfolio));
 	portfolioDao.insertPortfolio(portfolio);
 	portfolioDao.setMarket(portfolio, market);

@@ -1,6 +1,7 @@
 package com.zakmouf.bluetree.dao.impl;
 
 import java.sql.Types;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -15,107 +16,74 @@ import com.zakmouf.bluetree.domain.Stock;
 public class MarketDaoImpl extends BaseDaoImpl implements MarketDao {
 
     @Override
-    public Market findMarket(Long id) {
-	String sql = "select * from markets where market_id=?";
+    public Market findById(Long id) {
+	String sql = "select * from v_market m where m.market_id = ?";
 	Object[] args = { id };
 	int[] argTypes = { Types.NUMERIC };
 	return queryForObject(sql, args, argTypes, new MarketRowMapper());
     }
 
     @Override
-    public Market findMarket(String name) {
-	String sql = "select * from markets where market_name=?";
+    public Market findByName(String name) {
+	String sql = "select * from v_market m where m.market_name = ?";
 	Object[] args = { name };
 	int[] argTypes = { Types.VARCHAR };
 	return queryForObject(sql, args, argTypes, new MarketRowMapper());
     }
 
     @Override
-    public List<Market> getMarkets() {
-	String sql = "select * from markets order by market_name";
+    public List<Market> findAll() {
+	String sql = "select * from v_market m order by m.market_name";
 	Object[] args = {};
 	int[] argTypes = {};
 	return queryForList(sql, args, argTypes, new MarketRowMapper());
     }
 
     @Override
-    public void insertMarket(Market market) {
-	String sql = "insert into markets values (null, ?, ?)";
-	Object[] args = { market.getName(), market.getRiskless() };
-	int[] argTypes = { Types.VARCHAR, Types.NUMERIC };
-	insert(sql, args, argTypes, market);
+    public void insert(Market market) {
+	market.setId(getNextId());
+	String sql = "insert into t_market (f_id, f_name, f_riskless, indice_id) values (?, ?, ?, ?)";
+	Object[] args = { market.getId(), market.getName(), market.getRiskless(), market.getIndice().getId() };
+	int[] argTypes = { Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.NUMERIC };
+	insert(sql, args, argTypes);
     }
 
     @Override
-    public void updateMarket(Market market) {
-	String sql = "update markets set market_name=?, market_riskless=? where market_id=?";
-	Object[] args = { market.getName(), market.getRiskless(), market.getId() };
-	int[] argTypes = { Types.VARCHAR, Types.NUMERIC, Types.NUMERIC };
+    public void update(Market market) {
+	String sql = "update t_market set f_name = ?, f_riskless = ?, indice_id = ? where f_id = ?";
+	Object[] args = { market.getName(), market.getRiskless(), market.getIndice().getId(), market.getId() };
+	int[] argTypes = { Types.VARCHAR, Types.NUMERIC, Types.NUMERIC, Types.NUMERIC };
 	update(sql, args, argTypes);
     }
 
     @Override
-    public void deleteMarket(Market market) {
-	//
-	String sql = "";
+    public void delete(Market market) {
+	String sql = "delete from t_market where f_id = ?";
 	Object[] args = { market.getId() };
 	int[] argTypes = { Types.NUMERIC };
-	//
-	sql = "select count(1) from portfolio_lnk_market where plm_market_id=?";
-	if (queryForInteger(sql, args, argTypes) > 0) {
-	    return;
-	}
-	//
-	sql = "delete from markets where market_id=?";
-	update(sql, args, argTypes);
-	//
-	sql = "delete from market_lnk_indice where mli_market_id=?";
-	update(sql, args, argTypes);
-	//
-	sql = "delete from market_lnk_stock where mls_market_id=?";
-	update(sql, args, argTypes);
-    }
-
-    @Override
-    public Stock getIndice(Market market) {
-	String sql = "select * from market_lnk_indice, stocks where mli_market_id=? and mli_indice_id=stock_id";
-	Object[] args = { market.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	return queryForObject(sql, args, argTypes, new StockRowMapper());
-    }
-
-    @Override
-    public void setIndice(Market market, Stock indice) {
-	//
-	String sql = "delete from market_lnk_indice where mli_market_id=?";
-	Object[] args = { market.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	update(sql, args, argTypes);
-	//
-	sql = "insert into market_lnk_indice values (?, ?)";
-	args = new Object[] { market.getId(), indice.getId() };
-	argTypes = new int[] { Types.NUMERIC, Types.NUMERIC };
-	update(sql, args, argTypes);
+	delete(sql, args, argTypes);
     }
 
     @Override
     public List<Stock> getStocks(Market market) {
-	String sql = "select * from market_lnk_stock, stocks where mls_market_id=? and mls_stock_id=stock_id order by stock_symbol";
+	String sql = "select s.* from t_market_stock ms join v_stock s on ms.stock_id = s.stock_id where ms.market_id = ?";
 	Object[] args = { market.getId() };
 	int[] argTypes = { Types.NUMERIC };
-	return queryForList(sql, args, argTypes, new StockRowMapper());
+	List<Stock> stocks = queryForList(sql, args, argTypes, new StockRowMapper());
+	Collections.sort(stocks);
+	return stocks;
     }
 
     @Override
     public void setStocks(Market market, List<Stock> stocks) {
 	//
-	String sql = "delete from market_lnk_stock where mls_market_id=?";
+	String sql = "delete from t_market_stock where market_id = ?";
 	Object[] args = { market.getId() };
 	int[] argTypes = { Types.NUMERIC };
 	update(sql, args, argTypes);
 	//
 	for (Stock stock : stocks) {
-	    sql = "insert into market_lnk_stock values (?, ?)";
+	    sql = "insert into t_market_stock (market_id, stock_id) values (?, ?)";
 	    args = new Object[] { market.getId(), stock.getId() };
 	    argTypes = new int[] { Types.NUMERIC, Types.NUMERIC };
 	    update(sql, args, argTypes);

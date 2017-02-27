@@ -11,7 +11,8 @@ public class StockRowMapper extends BaseRowMapper implements RowMapper<Stock> {
 
     @Override
     public Stock mapRow(ResultSet rs, int rowNum) throws SQLException {
-	return mapStock(rs);
+	Stock stock = mapStock(rs);
+	return stock;
     }
 
 }

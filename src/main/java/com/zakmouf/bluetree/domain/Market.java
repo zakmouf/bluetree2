@@ -8,6 +8,8 @@ public class Market extends BaseEntity {
 
     private Double riskless;
 
+    private Stock indice;
+
     public String getName() {
 	return name;
     }
@@ -22,6 +24,14 @@ public class Market extends BaseEntity {
 
     public void setRiskless(Double riskless) {
 	this.riskless = riskless;
+    }
+
+    public Stock getIndice() {
+	return indice;
+    }
+
+    public void setIndice(Stock indice) {
+	this.indice = indice;
     }
 
     @Override

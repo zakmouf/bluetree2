@@ -7,21 +7,17 @@ import com.zakmouf.bluetree.domain.Stock;
 
 public interface MarketDao {
 
-    Market findMarket(Long id);
+    Market findById(Long id);
 
-    Market findMarket(String name);
+    Market findByName(String name);
 
-    List<Market> getMarkets();
+    List<Market> findAll();
 
-    void insertMarket(Market market);
+    void insert(Market market);
 
-    void updateMarket(Market market);
+    void update(Market market);
 
-    void deleteMarket(Market market);
-
-    Stock getIndice(Market market);
-
-    void setIndice(Market market, Stock indice);
+    void delete(Market market);
 
     List<Stock> getStocks(Market market);
 

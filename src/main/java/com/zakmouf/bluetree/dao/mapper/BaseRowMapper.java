@@ -18,112 +18,129 @@ public abstract class BaseRowMapper {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected Long mapLong(ResultSet rs, int columnIndex) throws SQLException {
+    protected Long getLong(ResultSet rs, int columnIndex) throws SQLException {
 	long value = rs.getLong(columnIndex);
 	return rs.wasNull() ? null : new Long(value);
     }
 
-    protected Long mapLong(ResultSet rs, String columnLabel) throws SQLException {
+    protected Long getLong(ResultSet rs, String columnLabel) throws SQLException {
 	long value = rs.getLong(columnLabel);
 	return rs.wasNull() ? null : new Long(value);
     }
 
-    protected String mapString(ResultSet rs, int columnIndex) throws SQLException {
+    protected String getString(ResultSet rs, int columnIndex) throws SQLException {
 	return rs.getString(columnIndex);
     }
 
-    protected String mapString(ResultSet rs, String columnLabel) throws SQLException {
+    protected String getString(ResultSet rs, String columnLabel) throws SQLException {
 	return rs.getString(columnLabel);
     }
 
-    protected Double mapDouble(ResultSet rs, int columnIndex) throws SQLException {
+    protected Double getDouble(ResultSet rs, int columnIndex) throws SQLException {
 	double value = rs.getDouble(columnIndex);
 	return rs.wasNull() ? null : new Double(value);
     }
 
-    protected Double mapDouble(ResultSet rs, String columnLabel) throws SQLException {
+    protected Double getDouble(ResultSet rs, String columnLabel) throws SQLException {
 	double value = rs.getDouble(columnLabel);
 	return rs.wasNull() ? null : new Double(value);
     }
 
-    protected Integer mapInteger(ResultSet rs, int columnIndex) throws SQLException {
+    protected Integer getInteger(ResultSet rs, int columnIndex) throws SQLException {
 	int value = rs.getInt(columnIndex);
 	return rs.wasNull() ? null : new Integer(value);
     }
 
-    protected Integer mapInteger(ResultSet rs, String columnLabel) throws SQLException {
+    protected Integer getInteger(ResultSet rs, String columnLabel) throws SQLException {
 	int value = rs.getInt(columnLabel);
 	return rs.wasNull() ? null : new Integer(value);
     }
 
-    protected Boolean mapBoolean(ResultSet rs, int columnIndex) throws SQLException {
+    protected Boolean getBoolean(ResultSet rs, int columnIndex) throws SQLException {
 	boolean value = rs.getBoolean(columnIndex);
 	return rs.wasNull() ? null : Boolean.valueOf(value);
     }
 
-    protected Boolean mapBoolean(ResultSet rs, String columnLabel) throws SQLException {
+    protected Boolean getBoolean(ResultSet rs, String columnLabel) throws SQLException {
 	boolean value = rs.getBoolean(columnLabel);
 	return rs.wasNull() ? null : Boolean.valueOf(value);
     }
 
-    protected Date mapDate(ResultSet rs, int columnIndex) throws SQLException {
+    protected Date getDate(ResultSet rs, int columnIndex) throws SQLException {
 	java.sql.Date date = rs.getDate(columnIndex);
 	return rs.wasNull() ? null : new Date(date.getTime());
     }
 
-    protected Date mapDate(ResultSet rs, String columnLabel) throws SQLException {
+    protected Date getDate(ResultSet rs, String columnLabel) throws SQLException {
 	java.sql.Date date = rs.getDate(columnLabel);
 	return rs.wasNull() ? null : new Date(date.getTime());
     }
 
-    protected Date mapTimestamp(ResultSet rs, int columnIndex) throws SQLException {
+    protected Date getTimestamp(ResultSet rs, int columnIndex) throws SQLException {
 	Timestamp timestamp = rs.getTimestamp(columnIndex);
 	return rs.wasNull() ? null : new Date(timestamp.getTime());
     }
 
-    protected Date mapTimestamp(ResultSet rs, String columnLabel) throws SQLException {
+    protected Date getTimestamp(ResultSet rs, String columnLabel) throws SQLException {
 	Timestamp timestamp = rs.getTimestamp(columnLabel);
 	return rs.wasNull() ? null : new Date(timestamp.getTime());
     }
 
     protected Market mapMarket(ResultSet rs) throws SQLException {
+	return mapMarket(rs, "market");
+    }
+
+    protected Market mapMarket(ResultSet rs, String prefix) throws SQLException {
 	Market market = new Market();
-	market.setId(mapLong(rs, "market_id"));
-	market.setName(mapString(rs, "market_name"));
-	market.setRiskless(mapDouble(rs, "market_riskless"));
+	market.setId(getLong(rs, prefix + "_id"));
+	market.setName(getString(rs, prefix + "_name"));
+	market.setRiskless(getDouble(rs, prefix + "_riskless"));
+	Stock indice = mapStock(rs, "indice");
+	market.setIndice(indice);
 	return market;
     }
 
     protected Stock mapStock(ResultSet rs) throws SQLException {
+	return mapStock(rs, "stock");
+    }
+
+    protected Stock mapStock(ResultSet rs, String prefix) throws SQLException {
 	Stock stock = new Stock();
-	stock.setId(mapLong(rs, "stock_id"));
-	stock.setSymbol(mapString(rs, "stock_symbol"));
-	stock.setName(mapString(rs, "stock_name"));
+	stock.setId(getLong(rs, prefix + "_id"));
+	stock.setSymbol(getString(rs, prefix + "_symbol"));
+	stock.setName(getString(rs, prefix + "_name"));
+	stock.setDateCount(getInteger(rs, prefix + "_date_count"));
+	stock.setFirstDate(getDate(rs, prefix + "_first_date"));
+	stock.setLastDate(getDate(rs, prefix + "_last_date"));
 	return stock;
     }
 
     protected Price mapPrice(ResultSet rs) throws SQLException {
+	return mapPrice(rs, "price");
+    }
+
+    protected Price mapPrice(ResultSet rs, String prefix) throws SQLException {
 	Price price = new Price();
-	price.setDate(mapDate(rs, "price_date"));
-	price.setValue(mapDouble(rs, "price_value"));
+	price.setDate(getDate(rs, prefix + "_date"));
+	price.setValue(getDouble(rs, prefix + "_value"));
 	return price;
     }
 
     protected Portfolio mapPortfolio(ResultSet rs) throws SQLException {
 	Portfolio portfolio = new Portfolio();
-	portfolio.setId(mapLong(rs, "portfolio_id"));
-	portfolio.setName(mapString(rs, "portfolio_name"));
-	portfolio.setFromDate(mapDate(rs, "portfolio_from_date"));
-	portfolio.setToDate(mapDate(rs, "portfolio_to_date"));
-	portfolio.setBeta(mapDouble(rs, "portfolio_beta"));
-	portfolio.setSize(mapInteger(rs, "portfolio_size"));
+	portfolio.setId(getLong(rs, "portfolio_id"));
+	portfolio.setName(getString(rs, "portfolio_name"));
+	portfolio.setFromDate(getDate(rs, "portfolio_from_date"));
+	portfolio.setToDate(getDate(rs, "portfolio_to_date"));
+	portfolio.setBeta(getDouble(rs, "portfolio_beta"));
+	portfolio.setSize(getInteger(rs, "portfolio_size"));
 	return portfolio;
     }
 
     protected Position mapPosition(ResultSet rs) throws SQLException {
 	Position position = new Position();
 	position.setStock(mapStock(rs));
-	position.setWeight(mapDouble(rs, "pls_weight"));
+	position.setWeight(getDouble(rs, "pls_weight"));
 	return position;
     }
 

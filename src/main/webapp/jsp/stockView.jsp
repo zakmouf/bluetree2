@@ -21,6 +21,18 @@
     <td>Name :</td>
     <td><c:out value="${stock.name}" /></td>
   </tr>
+  <tr>
+    <td>Date count :</td>
+    <td><c:out value="${stock.dateCount}" /></td>
+  </tr>
+  <tr>
+    <td>First date :</td>
+    <td><fmt:formatDate value="${stock.firstDate}" pattern="yyyy-MM-dd" /></td>
+  </tr>
+  <tr>
+    <td>Last date :</td>
+    <td><fmt:formatDate value="${stock.lastDate}" pattern="yyyy-MM-dd" /></td>
+  </tr>
 </table>
 
 <table>

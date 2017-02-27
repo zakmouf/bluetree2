@@ -9,7 +9,7 @@ public class IntegerRowMapper extends BaseRowMapper implements RowMapper<Integer
 
     @Override
     public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-	return mapInteger(rs, 1);
+	return getInteger(rs, 1);
     }
 
 }

@@ -11,7 +11,8 @@ public class PriceRowMapper extends BaseRowMapper implements RowMapper<Price> {
 
     @Override
     public Price mapRow(ResultSet rs, int rowNum) throws SQLException {
-	return mapPrice(rs);
+	Price price = mapPrice(rs);
+	return price;
     }
 
 }

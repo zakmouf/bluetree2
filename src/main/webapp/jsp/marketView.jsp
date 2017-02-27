@@ -24,7 +24,7 @@
   </tr>
   <tr>
     <td>Indice :</td>
-    <td><a href="<c:url value="/stock/view?stock=${indice.id}"/>"><c:out value="${indice.symbol}" /></a> ( <c:out value="${indice.name}" /> )</td>
+    <td><a href="<c:url value="/stock/view?stock=${market.indice.id}"/>"><c:out value="${market.indice.symbol}" /></a> ( <c:out value="${market.indice.name}" /> )</td>
   </tr>
 </table>
 

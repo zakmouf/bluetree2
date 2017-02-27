@@ -6,6 +6,10 @@ public abstract class BaseEntity extends BaseObject {
 
     protected Long id;
 
+    public BaseEntity() {
+
+    }
+
     public Long getId() {
 	return id;
     }

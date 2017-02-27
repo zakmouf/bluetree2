@@ -67,13 +67,13 @@ public class OptimizeServiceImpl extends BaseService implements OptimizeService 
 	// read data
 	//
 	Market market = portfolioDao.getMarket(portfolio);
-	Stock indice = marketDao.getIndice(market);
+	Stock indice = market.getIndice();
 	List<Stock> initialStocks = marketDao.getStocks(market);
 	Date fromDate = portfolio.getFromDate();
 	Date toDate = portfolio.getToDate();
 
 	// read indice
-	List<Price> indicePrices = stockDao.getPrices(indice, fromDate, toDate);
+	List<Price> indicePrices = stockDao.findPricesBetween(indice, fromDate, toDate);
 	if (indicePrices.size() < 10) {
 	    throw new RuntimeException(msg("Indice <{0}> is empty", indice.getSymbol()));
 	}
@@ -88,7 +88,7 @@ public class OptimizeServiceImpl extends BaseService implements OptimizeService 
 	List<Stock> stocks = new ArrayList<Stock>();
 	List<List<Price>> stockPricesList = new ArrayList<List<Price>>();
 	for (Stock stock : initialStocks) {
-	    List<Price> stockPrices = stockDao.getPricesInclusive(stock, fromDate, toDate);
+	    List<Price> stockPrices = stockDao.findPricesBetweenInclusive(stock, fromDate, toDate);
 	    if (stockPrices.isEmpty()) {
 		logger.debug(msg("Stock <{0}> is empty", stock.getSymbol()));
 	    } else {

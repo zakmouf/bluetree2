@@ -5,6 +5,10 @@ public class StockForm {
     private String symbol;
     private String name;
 
+    public StockForm() {
+	symbol = "symbol";
+    }
+
     public String getSymbol() {
 	return symbol;
     }

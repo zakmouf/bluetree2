@@ -14,11 +14,17 @@
   <tr>
     <th>Symbol</th>
     <th>Name</th>
+    <th>Date count</th>
+    <th>First date</th>
+    <th>Last date</th>
   </tr>
   <c:forEach items="${stocks}" var="stock">
     <tr>
       <td><a href="<c:url value="/stock/view?stock=${stock.id}"/>"><c:out value="${stock.symbol}" /></a></td>
       <td><c:out value="${stock.name}" /></td>
+    <td><c:out value="${stock.dateCount}" /></td>
+    <td><fmt:formatDate value="${stock.firstDate}" pattern="yyyy-MM-dd" /></td>
+    <td><fmt:formatDate value="${stock.lastDate}" pattern="yyyy-MM-dd" /></td>
     </tr>
   </c:forEach>
 </table>

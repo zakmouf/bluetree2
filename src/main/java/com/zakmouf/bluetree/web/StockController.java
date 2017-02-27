@@ -29,7 +29,7 @@ public class StockController extends BaseController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getList() {
-	List<Stock> stocks = stockDao.getStocks();
+	List<Stock> stocks = stockDao.findAll();
 	ModelAndView mav = new ModelAndView("stockList");
 	mav.getModel().put("stocks", stocks);
 	return mav;
@@ -38,8 +38,6 @@ public class StockController extends BaseController {
     @RequestMapping(value = "/new", method = RequestMethod.GET)
     public ModelAndView getNew() {
 	StockForm form = new StockForm();
-	form.setSymbol("symbol");
-	form.setName("name");
 	ModelAndView mav = new ModelAndView("stockNew");
 	mav.getModel().put("form", form);
 	return mav;
@@ -48,24 +46,23 @@ public class StockController extends BaseController {
     @RequestMapping(value = "/new", method = RequestMethod.POST)
     public ModelAndView submitNew(@ModelAttribute StockForm form) {
 	String symbol = form.getSymbol();
-	String name = form.getName();
-	if (stockDao.findStock(symbol) != null) {
+	if (stockDao.findBySymbol(symbol) != null) {
 	    ModelAndView mav = new ModelAndView("stockNew");
 	    mav.getModel().put("form", form);
 	    return mav;
 	}
 	Stock stock = new Stock();
 	stock.setSymbol(symbol);
-	stock.setName(name);
+	stock.setName(form.getName());
 	logger.info(msg("insert stock <{0}>", stock));
-	stockDao.insertStock(stock);
+	stockDao.insert(stock);
 	ModelAndView mav = new ModelAndView("redirect:/stock/view?stock=" + stock.getId());
 	return mav;
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
     public ModelAndView getEdit(@RequestParam("stock") Long stockId) {
-	Stock stock = stockDao.findStock(stockId);
+	Stock stock = stockDao.findById(stockId);
 	StockForm form = new StockForm();
 	form.setSymbol(stock.getSymbol());
 	form.setName(stock.getName());
@@ -77,8 +74,7 @@ public class StockController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public ModelAndView submitEdit(@RequestParam("stock") Long stockId, @ModelAttribute StockForm form) {
 	String symbol = form.getSymbol();
-	String name = form.getName();
-	Stock stock = stockDao.findStock(symbol);
+	Stock stock = stockDao.findBySymbol(symbol);
 	if (stock != null) {
 	    if (!stock.getId().equals(stockId)) {
 		ModelAndView mav = new ModelAndView("stockEdit");
@@ -86,28 +82,28 @@ public class StockController extends BaseController {
 		return mav;
 	    }
 	}
-	stock = stockDao.findStock(stockId);
+	stock = stockDao.findById(stockId);
 	stock.setSymbol(symbol);
-	stock.setName(name);
+	stock.setName(form.getName());
 	logger.info(msg("update stock <{0}>", stock));
-	stockDao.updateStock(stock);
+	stockDao.update(stock);
 	ModelAndView mav = new ModelAndView("redirect:/stock/view?stock=" + stock.getId());
 	return mav;
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public ModelAndView doDelete(@RequestParam("stock") Long stockId) {
-	Stock stock = stockDao.findStock(stockId);
+	Stock stock = stockDao.findById(stockId);
 	logger.info(msg("delete stock <{0}>", stock));
-	stockDao.deleteStock(stock);
+	stockDao.delete(stock);
 	ModelAndView mav = new ModelAndView("redirect:/stock");
 	return mav;
     }
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     public ModelAndView getView(@RequestParam("stock") Long stockId, HttpServletRequest request) {
-	Stock stock = stockDao.findStock(stockId);
-	List<Price> prices = stockDao.getPrices(stock);
+	Stock stock = stockDao.findById(stockId);
+	List<Price> prices = stockDao.findPrices(stock);
 	generateChart(request, "stock", prices);
 	ModelAndView mav = new ModelAndView("stockView");
 	mav.getModel().put("stock", stock);

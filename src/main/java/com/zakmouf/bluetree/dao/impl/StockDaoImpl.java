@@ -1,10 +1,13 @@
 package com.zakmouf.bluetree.dao.impl;
 
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import com.zakmouf.bluetree.dao.StockDao;
 import com.zakmouf.bluetree.dao.mapper.PriceRowMapper;
@@ -16,135 +19,243 @@ import com.zakmouf.bluetree.domain.Stock;
 public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 
     @Override
-    public Stock findStock(Long id) {
-	String sql = "select * from stocks where stock_id=?";
+    public Stock findById(Long id) {
+	Assert.notNull(id);
+	//
+	String sql = "select s.* from v_stock s where s.stock_id = ?";
 	Object[] args = { id };
 	int[] argTypes = { Types.NUMERIC };
-	return queryForObject(sql, args, argTypes, new StockRowMapper());
+	//
+	Stock stock = queryForObject(sql, args, argTypes, new StockRowMapper());
+	//
+	return stock;
     }
 
     @Override
-    public Stock findStock(String symbol) {
-	String sql = "select * from stocks where stock_symbol=?";
+    public Stock findBySymbol(String symbol) {
+	Assert.notNull(symbol);
+	//
+	String sql = "select s.* from v_stock s where s.stock_symbol = ?";
 	Object[] args = { symbol };
 	int[] argTypes = { Types.VARCHAR };
-	return queryForObject(sql, args, argTypes, new StockRowMapper());
+	//
+	Stock stock = queryForObject(sql, args, argTypes, new StockRowMapper());
+	//
+	return stock;
     }
 
     @Override
-    public List<Stock> getStocks() {
-	String sql = "select * from stocks order by stock_symbol";
+    public List<Stock> findAll() {
+	String sql = "select s.* from v_stock s";
 	Object[] args = {};
 	int[] argTypes = {};
-	return queryForList(sql, args, argTypes, new StockRowMapper());
+	//
+	List<Stock> stocks = queryForList(sql, args, argTypes, new StockRowMapper());
+	//
+	Collections.sort(stocks);
+	//
+	return stocks;
     }
 
     @Override
-    public void insertStock(Stock stock) {
-	String sql = "insert into stocks values (null, ?, ?)";
-	Object[] args = { stock.getSymbol(), stock.getName() };
-	int[] argTypes = { Types.VARCHAR, Types.VARCHAR };
-	insert(sql, args, argTypes, stock);
+    public void insert(Stock stock) {
+	Assert.notNull(stock);
+	Assert.isNull(stock.getId());
+	Assert.notNull(stock.getSymbol());
+	//
+	stock.setId(getNextId());
+	//
+	String sql = "insert into t_stock (f_id, f_symbol, f_name) values (?, ?, ?)";
+	Object[] args = { stock.getId(), stock.getSymbol(), stock.getName() };
+	int[] argTypes = { Types.NUMERIC, Types.VARCHAR, Types.VARCHAR };
+	//
+	insert(sql, args, argTypes);
     }
 
     @Override
-    public void updateStock(Stock stock) {
-	String sql = "update stocks set stock_name=? where stock_id=?";
-	Object[] args = { stock.getName(), stock.getId() };
-	int[] argTypes = { Types.VARCHAR, Types.NUMERIC };
+    public void update(Stock stock) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	Assert.notNull(stock.getSymbol());
+	//
+	String sql = "update t_stock set f_symbol= ?, f_name = ? where f_id = ?";
+	Object[] args = { stock.getSymbol(), stock.getName(), stock.getId() };
+	int[] argTypes = { Types.VARCHAR, Types.VARCHAR, Types.NUMERIC };
+	//
 	update(sql, args, argTypes);
     }
 
     @Override
-    public void deleteStock(Stock stock) {
+    public void delete(Stock stock) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
 	//
-	String sql = "";
+	String sql = "delete from t_stock where f_id = ?";
 	Object[] args = { stock.getId() };
 	int[] argTypes = { Types.NUMERIC };
 	//
-	sql = "select count(*) from market_lnk_indice where mli_indice_id=?";
-	if (queryForInteger(sql, args, argTypes) > 0) {
-	    return;
-	}
-	//
-	sql = "select count(*) from market_lnk_stock where mls_stock_id=?";
-	if (queryForInteger(sql, args, argTypes) > 0) {
-	    return;
-	}
-	//
-	sql = "select count(*) from portfolio_lnk_stock where pls_stock_id=?";
-	if (queryForInteger(sql, args, argTypes) > 0) {
-	    return;
-	}
-	//
-	sql = "delete from stocks where stock_id=?";
-	update(sql, args, argTypes);
-	//
-	sql = "delete from prices where price_stock_id=?";
-	update(sql, args, argTypes);
+	delete(sql, args, argTypes);
     }
 
     @Override
-    public List<Price> getPrices(Stock stock) {
-	String sql = "select * from prices where price_stock_id=? order by price_date";
+    public Date findLastDate(Stock stock) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	//
+	String sql = "select max(f_date) from t_price where stock_id = ?";
 	Object[] args = { stock.getId() };
 	int[] argTypes = { Types.NUMERIC };
-	return queryForList(sql, args, argTypes, new PriceRowMapper());
+	//
+	Date lastDate = queryForObject(sql, args, argTypes, Date.class);
+	//
+	return lastDate;
     }
 
     @Override
-    public void addPrices(Stock stock, List<Price> prices) {
+    public List<Price> findPrices(Stock stock) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	//
+	String sql = "select p.price_date, p.price_value from v_price p where p.stock_id = ?";
+	Object[] args = { stock.getId() };
+	int[] argTypes = { Types.NUMERIC };
+	//
+	List<Price> prices = queryForList(sql, args, argTypes, new PriceRowMapper());
+	//
+	Collections.sort(prices);
+	//
+	return prices;
+    }
+
+    @Override
+    public List<Price> findPricesBetween(Stock stock, Date fromDate, Date toDate) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	Assert.notNull(fromDate);
+	Assert.notNull(toDate);
+	Assert.isTrue(fromDate.compareTo(toDate) <= 0);
+	//
+	List<Price> prices = findPrices(stock);
+	//
+	List<Price> filterPrices = new ArrayList<Price>();
 	for (Price price : prices) {
-	    String sql = "insert into prices values (?, ?, ?)";
+	    if (price.getDate().compareTo(fromDate) >= 0 && price.getDate().compareTo(toDate) <= 0) {
+		filterPrices.add(price);
+	    }
+	}
+	//
+	return filterPrices;
+    }
+
+    @Override
+    public List<Price> findPricesBetweenInclusive(Stock stock, Date fromDate, Date toDate) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	Assert.notNull(fromDate);
+	Assert.notNull(toDate);
+	Assert.isTrue(fromDate.compareTo(toDate) <= 0);
+	//
+	List<Price> prices = findPrices(stock);
+	//
+	Date filterFromDate = null;
+	Date filterToDate = null;
+	for (Price price : prices) {
+	    if (price.getDate().compareTo(fromDate) <= 0) {
+		filterFromDate = price.getDate();
+	    }
+	    if (price.getDate().compareTo(toDate) >= 0) {
+		if (filterToDate == null) {
+		    filterToDate = price.getDate();
+		}
+	    }
+	}
+	//
+	List<Price> filterPrices = new ArrayList<Price>();
+	if (filterFromDate != null && filterToDate != null) {
+	    for (Price price : prices) {
+		if (price.getDate().compareTo(filterFromDate) >= 0 && price.getDate().compareTo(filterToDate) <= 0) {
+		    filterPrices.add(price);
+		}
+	    }
+	}
+	//
+	return filterPrices;
+    }
+
+    @Override
+    public List<Price> findPricesFrom(Stock stock, Date fromDate) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	Assert.notNull(fromDate);
+	//
+	List<Price> prices = findPrices(stock);
+	//
+	List<Price> filterPrices = new ArrayList<Price>();
+	for (Price price : prices) {
+	    if (price.getDate().compareTo(fromDate) >= 0) {
+		filterPrices.add(price);
+	    }
+	}
+	//
+	return filterPrices;
+    }
+
+    @Override
+    public List<Price> findPricesFromInclusive(Stock stock, Date fromDate) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	Assert.notNull(fromDate);
+	//
+	List<Price> prices = findPrices(stock);
+	//
+	Date filterFromDate = null;
+	for (Price price : prices) {
+	    if (price.getDate().compareTo(fromDate) <= 0) {
+		filterFromDate = price.getDate();
+	    }
+	}
+	//
+	List<Price> filterPrices = new ArrayList<Price>();
+	if (filterFromDate != null) {
+	    for (Price price : prices) {
+		if (price.getDate().compareTo(filterFromDate) >= 0) {
+		    filterPrices.add(price);
+		}
+	    }
+	}
+	//
+	return filterPrices;
+    }
+
+    @Override
+    public void insertPrices(Stock stock, List<Price> prices) {
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	Assert.notNull(prices);
+	//
+	for (Price price : prices) {
+	    Assert.notNull(price);
+	    Assert.notNull(price.getDate());
+	    Assert.notNull(price.getValue());
+	    //
+	    String sql = "insert into t_price (stock_id, f_date, f_value) values (?, ?, ?)";
 	    Object[] args = { stock.getId(), price.getDate(), price.getValue() };
 	    int[] argTypes = { Types.NUMERIC, Types.DATE, Types.NUMERIC };
+	    //
 	    update(sql, args, argTypes);
 	}
     }
 
     @Override
     public void deletePrices(Stock stock) {
-	String sql = "delete from prices where price_stock_id=?";
+	Assert.notNull(stock);
+	Assert.notNull(stock.getId());
+	//
+	String sql = "delete from t_price where stock_id = ?";
 	Object[] args = { stock.getId() };
 	int[] argTypes = { Types.NUMERIC };
+	//
 	update(sql, args, argTypes);
-    }
-
-    @Override
-    public Date getLastDate(Stock stock) {
-	String sql = "select max(price_date) as last_date from prices where price_stock_id=?";
-	Object[] args = { stock.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	return queryForDate(sql, args, argTypes);
-    }
-
-    @Override
-    public List<Price> getPrices(Stock stock, Date fromDate, Date toDate) {
-	String sql = "select * from prices where price_stock_id=? and price_date>=? and price_date<=? order by price_date";
-	Object[] args = { stock.getId(), fromDate, toDate };
-	int[] argTypes = { Types.NUMERIC, Types.DATE, Types.DATE };
-	return queryForList(sql, args, argTypes, new PriceRowMapper());
-    }
-
-    @Override
-    public List<Price> getPricesInclusive(Stock stock, Date fromDate, Date toDate) {
-	String sql = "select * from prices where price_stock_id=? "
-		+ "and price_date>=(select max(price_date) from prices where price_stock_id=? and price_date<=?) "
-		+ "and price_date<=(select min(price_date) from prices where price_stock_id=? and price_date>=?) "
-		+ "order by price_date";
-	Object[] args = { stock.getId(), stock.getId(), fromDate, stock.getId(), toDate };
-	int[] argTypes = { Types.NUMERIC, Types.NUMERIC, Types.DATE, Types.NUMERIC, Types.DATE };
-	return queryForList(sql, args, argTypes, new PriceRowMapper());
-    }
-
-    @Override
-    public List<Price> getPricesInclusive(Stock stock, Date fromDate) {
-	String sql = "select * from prices where price_stock_id=? "
-		+ "and price_date>=(select max(price_date) from prices where price_stock_id=? and price_date<=?) "
-		+ "order by price_date";
-	Object[] args = { stock.getId(), stock.getId(), fromDate };
-	int[] argTypes = { Types.NUMERIC, Types.NUMERIC, Types.DATE };
-	return queryForList(sql, args, argTypes, new PriceRowMapper());
     }
 
 }

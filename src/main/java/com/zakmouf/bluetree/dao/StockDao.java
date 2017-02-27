@@ -8,30 +8,32 @@ import com.zakmouf.bluetree.domain.Stock;
 
 public interface StockDao {
 
-    Stock findStock(Long id);
+    Stock findById(Long id);
 
-    Stock findStock(String symbol);
+    Stock findBySymbol(String symbol);
 
-    List<Stock> getStocks();
+    List<Stock> findAll();
 
-    void insertStock(Stock stock);
+    void insert(Stock stock);
 
-    void updateStock(Stock stock);
+    void update(Stock stock);
 
-    void deleteStock(Stock stock);
+    void delete(Stock stock);
 
-    List<Price> getPrices(Stock stock);
+    Date findLastDate(Stock stock);
 
-    void addPrices(Stock stock, List<Price> prices);
+    List<Price> findPrices(Stock stock);
+
+    List<Price> findPricesBetween(Stock stock, Date fromDate, Date toDate);
+
+    List<Price> findPricesBetweenInclusive(Stock stock, Date fromDate, Date toDate);
+
+    List<Price> findPricesFrom(Stock stock, Date fromDate);
+
+    List<Price> findPricesFromInclusive(Stock stock, Date fromDate);
+
+    void insertPrices(Stock stock, List<Price> prices);
 
     void deletePrices(Stock stock);
-
-    Date getLastDate(Stock stock);
-
-    List<Price> getPrices(Stock stock, Date fromDate, Date toDate);
-
-    List<Price> getPricesInclusive(Stock stock, Date fromDate, Date toDate);
-
-    List<Price> getPricesInclusive(Stock stock, Date fromDate);
 
 }

@@ -46,7 +46,7 @@ public class PortfolioDaoImpl extends BaseDaoImpl implements PortfolioDao {
 	Object[] args = { portfolio.getName(), portfolio.getFromDate(), portfolio.getToDate(), portfolio.getBeta(),
 		portfolio.getSize() };
 	int[] argTypes = { Types.VARCHAR, Types.DATE, Types.DATE, Types.NUMERIC, Types.NUMERIC };
-	insert(sql, args, argTypes, portfolio);
+	oldInsert(sql, args, argTypes, portfolio);
     }
 
     @Override

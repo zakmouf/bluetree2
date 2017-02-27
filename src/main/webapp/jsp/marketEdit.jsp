@@ -24,7 +24,7 @@
     <tr>
       <td>Indice :</td>
       <td><form:select path="indiceId">
-          <c:forEach items="${form.stocks}" var="stock">
+          <c:forEach items="${stocks}" var="stock">
             <form:option value="${stock.id}"><c:out value="${stock.symbol}" /> ( <c:out value="${stock.name}" /> )</form:option>
           </c:forEach>
         </form:select></td>
