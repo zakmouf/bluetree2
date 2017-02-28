@@ -5,7 +5,7 @@ import java.text.MessageFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class BaseService {
+public abstract class BaseServiceImpl {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

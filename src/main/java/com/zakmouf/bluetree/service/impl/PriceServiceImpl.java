@@ -12,7 +12,7 @@ import com.zakmouf.bluetree.domain.Stock;
 import com.zakmouf.bluetree.service.PriceService;
 
 @Component
-public class PriceServiceImpl extends BaseService implements PriceService {
+public class PriceServiceImpl extends BaseServiceImpl implements PriceService {
 
     @Autowired
     private PriceDao priceDao;

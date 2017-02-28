@@ -7,6 +7,6 @@ import com.zakmouf.bluetree.domain.Position;
 
 public interface OptimizeService {
 
-    public List<Position> optimize(Portfolio portfolio);
+    List<Position> optimize(Portfolio portfolio);
 
 }

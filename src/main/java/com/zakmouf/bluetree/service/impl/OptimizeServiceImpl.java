@@ -25,7 +25,7 @@ import com.zakmouf.bluetree.util.Randomizer;
 import com.zakmouf.bluetree.util.StatUtil;
 
 @Component
-public class OptimizeServiceImpl extends BaseService implements OptimizeService {
+public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeService {
 
     private static final int PREVIEW_MAX_LOOPS = 5000;
 

@@ -1,5 +1,6 @@
-package com.zakmouf.bluetree.dao;
+package com.zakmouf.bluetree.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,22 +18,21 @@ import com.zakmouf.bluetree.domain.Stock;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PriceDaoTest extends BaseTest {
+public class PriceServiceTest extends BaseTest {
 
     @Autowired
-    private StockDao stockDao;
+    private StockService stockService;
     @Autowired
-    private PriceDao priceDao;
+    private PriceService priceService;
 
     @Test
     @Transactional
     public void doTest() {
 
 	Stock stock = new Stock("symbol");
-	stockDao.insert(stock);
-	Long stockId = stock.getId();
+	stockService.saveStock(stock);
 
-	List<Price> prices = priceDao.findAll(stockId);
+	List<Price> prices = priceService.getPrices(stock);
 	Assert.assertNotNull(prices);
 	Assert.assertTrue(prices.isEmpty());
 
@@ -43,15 +43,17 @@ public class PriceDaoTest extends BaseTest {
 	price.setDate(date);
 	price.setValue(value);
 
-	priceDao.insert(stockId, price);
+	prices = new ArrayList<Price>();
+	prices.add(price);
+	priceService.addPrices(stock, prices);
 
-	prices = priceDao.findAll(stockId);
+	prices = priceService.getPrices(stock);
 	Assert.assertNotNull(prices);
 	Assert.assertTrue(prices.size() == 1);
 
-	priceDao.deleteAll(stockId);
+	priceService.deleteAllPrices(stock);
 
-	prices = priceDao.findAll(stockId);
+	prices = priceService.getPrices(stock);
 	Assert.assertNotNull(prices);
 	Assert.assertTrue(prices.isEmpty());
 

@@ -1,4 +1,4 @@
-package com.zakmouf.bluetree.dao;
+package com.zakmouf.bluetree.service;
 
 import java.util.List;
 
@@ -15,10 +15,10 @@ import com.zakmouf.bluetree.domain.Stock;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StockDaoTest extends BaseTest {
+public class StockServiceTest extends BaseTest {
 
     @Autowired
-    private StockDao stockDao;
+    private StockService stockService;
 
     @Test
     @Transactional
@@ -31,34 +31,34 @@ public class StockDaoTest extends BaseTest {
 	stock.setSymbol(symbol);
 	stock.setName(name);
 
-	Assert.assertNull(stockDao.findBySymbol(symbol));
+	Assert.assertNull(stockService.getStock(symbol));
 
-	stockDao.insert(stock);
+	stockService.saveStock(stock);
 	Long id = stock.getId();
 	Assert.assertNotNull(id);
 
-	stock = stockDao.findById(id);
+	stock = stockService.getStock(id);
 	Assert.assertNotNull(stock);
 
-	stock = stockDao.findBySymbol(symbol);
+	stock = stockService.getStock(symbol);
 	Assert.assertNotNull(stock);
 
-	List<Stock> stocks = stockDao.findAll();
+	List<Stock> stocks = stockService.getStocks();
 	Assert.assertTrue(stocks.contains(stock));
 
 	symbol = "#" + symbol + "#";
 	name = "#" + name + "#";
-	
+
 	stock.setSymbol(symbol);
 	stock.setName(name);
-	
-	stockDao.update(stock);
-	stock = stockDao.findBySymbol(symbol);
+
+	stockService.saveStock(stock);
+	stock = stockService.getStock(symbol);
 	Assert.assertNotNull(stock);
 
-	stockDao.delete(stock);
-	Assert.assertNull(stockDao.findById(id));
-	Assert.assertNull(stockDao.findBySymbol(symbol));
+	stockService.deleteStock(stock);
+	Assert.assertNull(stockService.getStock(id));
+	Assert.assertNull(stockService.getStock(symbol));
 
     }
 
