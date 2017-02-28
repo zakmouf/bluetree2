@@ -26,15 +26,24 @@ public class PriceServiceImpl extends BaseServiceImpl implements PriceService {
 
     @Override
     @Transactional
+    public void addPrice(Stock stock, Price price) {
+	logger.debug(msg("insert price=[%1$s] for stock=[%2$s]", price, stock));
+	priceDao.insert(stock.getId(), price);
+
+    }
+
+    @Override
+    @Transactional
     public void addPrices(Stock stock, List<Price> prices) {
 	for (Price price : prices) {
-	    priceDao.insert(stock.getId(), price);
+	    addPrice(stock, price);
 	}
     }
 
     @Override
     @Transactional
     public void deleteAllPrices(Stock stock) {
+	logger.info(msg("delete all prices for stock=[%1$s]", stock));
 	priceDao.deleteAll(stock.getId());
     }
 

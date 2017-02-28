@@ -20,6 +20,10 @@ public abstract class BaseDaoImpl {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    protected String msg(String pattern, Object... arguments) {
+	return String.format(pattern, arguments);
+    }
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

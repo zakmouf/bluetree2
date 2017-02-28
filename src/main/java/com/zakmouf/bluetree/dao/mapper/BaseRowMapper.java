@@ -18,6 +18,10 @@ public abstract class BaseRowMapper {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    protected String msg(String pattern, Object... arguments) {
+	return String.format(pattern, arguments);
+    }
+
     protected Long getLong(ResultSet rs, int columnIndex) throws SQLException {
 	long value = rs.getLong(columnIndex);
 	return rs.wasNull() ? null : new Long(value);

@@ -10,13 +10,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.zakmouf.bluetree.dao.MarketDao;
 import com.zakmouf.bluetree.dao.PortfolioDao;
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Portfolio;
 import com.zakmouf.bluetree.domain.Position;
 import com.zakmouf.bluetree.domain.Price;
 import com.zakmouf.bluetree.domain.Stock;
+import com.zakmouf.bluetree.service.MarketService;
 import com.zakmouf.bluetree.service.OptimizeService;
 import com.zakmouf.bluetree.service.PriceService;
 import com.zakmouf.bluetree.util.BasketUtil;
@@ -42,21 +42,21 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
     @Autowired
     private PortfolioDao portfolioDao;
     @Autowired
-    private MarketDao marketDao;
+    private MarketService marketService;
     @Autowired
     private PriceService priceService;
 
     @Override
     public List<Position> optimize(Portfolio portfolio) {
 
-	logger.info(msg("optimize portfolio <{0}>", portfolio));
+	logger.info(msgOld("optimize portfolio <{0}>", portfolio));
 
 	//
 	// read data
 	//
 	Market market = portfolioDao.getMarket(portfolio);
 	Stock indice = market.getIndice();
-	List<Stock> initialStocks = marketDao.getStocks(market);
+	List<Stock> initialStocks = marketService.getStocks(market);
 	Date fromDate = portfolio.getFromDate();
 	Date toDate = portfolio.getToDate();
 
@@ -65,9 +65,9 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 	List<Price> indicePrices = priceService.getPrices(indice);
 	indicePrices = PriceUtil.filterBetween(indicePrices, fromDate, toDate);
 	if (indicePrices.size() < 10) {
-	    throw new RuntimeException(msg("Indice <{0}> is empty", indice.getSymbol()));
+	    throw new RuntimeException(msgOld("Indice <{0}> is empty", indice.getSymbol()));
 	}
-	logger.debug(msg("Indice <{0}> size <{1}> first <{2}> last <{3}>", indice.getSymbol(), indicePrices.size(),
+	logger.debug(msgOld("Indice <{0}> size <{1}> first <{2}> last <{3}>", indice.getSymbol(), indicePrices.size(),
 		PriceUtil.firstDate(indicePrices), PriceUtil.lastDate(indicePrices)));
 
 	// correct dates
@@ -81,10 +81,10 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 	    List<Price> stockPrices = priceService.getPrices(stock);
 	    stockPrices = PriceUtil.filterBetweenInclusive(stockPrices, fromDate, toDate);
 	    if (stockPrices.isEmpty()) {
-		logger.debug(msg("Stock <{0}> is empty", stock.getSymbol()));
+		logger.debug(msgOld("Stock <{0}> is empty", stock.getSymbol()));
 	    } else {
 		int diff = PriceUtil.matchPrices(indicePrices, stockPrices);
-		logger.debug(msg("Stock <{0}> size <{1}> first <{2}> last <{3}> diff <{4}>", stock.getSymbol(),
+		logger.debug(msgOld("Stock <{0}> size <{1}> first <{2}> last <{3}> diff <{4}>", stock.getSymbol(),
 			stockPrices.size(), PriceUtil.firstDate(stockPrices), PriceUtil.lastDate(stockPrices), diff));
 		stocks.add(stock);
 		stockPricesList.add(stockPrices);
@@ -92,7 +92,7 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 	}
 
 	// less stocks to use
-	logger.info(msg("Use {0} / {1} stocks", stocks.size(), initialStocks.size()));
+	logger.info(msgOld("Use {0} / {1} stocks", stocks.size(), initialStocks.size()));
 	if (stocks.size() < 10) {
 	    throw new RuntimeException("Less than 10 stocks match chosen dates");
 	}
@@ -142,7 +142,7 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 		if (ratioMax < basketRatio) {
 		    cpt = 0;
 		    ratioMax = basketRatio;
-		    logger.debug(msg("Ratio max <{0,number,0.00%}>", ratioMax));
+		    logger.debug(msgOld("Ratio max <{0,number,0.00%}>", ratioMax));
 		}
 	    }
 	    cpt++;
@@ -154,11 +154,11 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 
 	// correct ratio max
 	ratioMax += 0.05;
-	logger.info(msg("Ratio max <{0,number,0.00%}>", ratioMax));
+	logger.info(msgOld("Ratio max <{0,number,0.00%}>", ratioMax));
 
 	// max weight
 	Double maxWeight = (1 - Math.exp(-0.08)) / (1 - Math.exp(-0.08 * size));
-	logger.info(msg("Max weight <{0,number,0.00%}>", maxWeight));
+	logger.info(msgOld("Max weight <{0,number,0.00%}>", maxWeight));
 
 	Integer[] points = new Integer[size];
 	for (int i = 0; i < size; i++) {
@@ -171,7 +171,7 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 	int success = 0;
 	int unsuccess = 0;
 
-	logger.debug(msg("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
+	logger.debug(msgOld("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
 
 	logger.info("Start optimization");
 	start = System.currentTimeMillis();
@@ -211,13 +211,13 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 
 		success++;
 		unsuccess = 0;
-		logger.debug(msg("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
+		logger.debug(msgOld("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
 	    } else {
 		unsuccess++;
 		if (unsuccess == OPTIMIZE_UNSUCCESS) {
 		    unsuccess = 0;
 		    ratioMax -= 0.005;
-		    logger.debug(msg("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
+		    logger.debug(msgOld("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
 		}
 	    }
 
@@ -243,7 +243,7 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 	});
 
 	for (Position position : positions) {
-	    logger.debug(msg("Stock <{0}> Weight <{1,number,0.00%}>", position.getStock().getSymbol(),
+	    logger.debug(msgOld("Stock <{0}> Weight <{1,number,0.00%}>", position.getStock().getSymbol(),
 		    position.getWeight()));
 	}
 
@@ -279,7 +279,7 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 	}
 
 	for (Position position : positions) {
-	    logger.debug(msg("Stock <{0}> Weight <{1,number,0.00%}>", position.getStock().getSymbol(),
+	    logger.debug(msgOld("Stock <{0}> Weight <{1,number,0.00%}>", position.getStock().getSymbol(),
 		    position.getWeight()));
 	}
 

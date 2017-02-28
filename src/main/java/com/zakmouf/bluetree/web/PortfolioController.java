@@ -11,35 +11,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.zakmouf.bluetree.dao.MarketDao;
 import com.zakmouf.bluetree.dao.PortfolioDao;
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Portfolio;
 import com.zakmouf.bluetree.domain.Position;
+import com.zakmouf.bluetree.service.MarketService;
 import com.zakmouf.bluetree.service.OptimizeService;
 
 @Controller
 @RequestMapping("/portfolio")
 public class PortfolioController extends BaseController {
 
+    @Autowired
     private PortfolioDao portfolioDao;
-    private MarketDao marketDao;
+    @Autowired
+    private MarketService marketService;
+    @Autowired
     private OptimizeService optimizeService;
-
-    @Autowired
-    public void setPortfolioDao(PortfolioDao portfolioDao) {
-	this.portfolioDao = portfolioDao;
-    }
-
-    @Autowired
-    public void setMarketDao(MarketDao marketDao) {
-	this.marketDao = marketDao;
-    }
-
-    @Autowired
-    public void setOptimizeService(OptimizeService optimizeService) {
-	this.optimizeService = optimizeService;
-    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getList(ModelMap model) {
@@ -52,7 +40,7 @@ public class PortfolioController extends BaseController {
     @RequestMapping(value = "/new", method = RequestMethod.GET)
     public ModelAndView getNew() {
 	PortfolioForm form = new PortfolioForm();
-	List<Market> markets = marketDao.findAll();
+	List<Market> markets = marketService.getMarkets();
 	form.setMarkets(markets);
 	form.setName("name");
 	form.setFromDateStr("2013-01-01");
@@ -71,7 +59,7 @@ public class PortfolioController extends BaseController {
     public ModelAndView submitNew(@ModelAttribute PortfolioForm form) {
 	String name = form.getName();
 	if (portfolioDao.findPortfolio(name) != null) {
-	    List<Market> markets = marketDao.findAll();
+	    List<Market> markets = marketService.getMarkets();
 	    form.setMarkets(markets);
 	    ModelAndView mav = new ModelAndView("portfolioNew");
 	    mav.getModel().put("form", form);
@@ -83,8 +71,8 @@ public class PortfolioController extends BaseController {
 	portfolio.setToDate(parseDate(form.getToDateStr()));
 	portfolio.setBeta(form.getBeta());
 	portfolio.setSize(form.getSize());
-	Market market = marketDao.findById(form.getMarketId());
-	logger.info(msg("insert portfolio <{0}>", portfolio));
+	Market market = marketService.getMarket(form.getMarketId());
+	logger.info(msgOld("insert portfolio <{0}>", portfolio));
 	portfolioDao.insertPortfolio(portfolio);
 	portfolioDao.setMarket(portfolio, market);
 	ModelAndView mav = new ModelAndView("redirect:/portfolio/view?portfolio=" + portfolio.getId());
@@ -106,7 +94,7 @@ public class PortfolioController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public ModelAndView doDelete(@RequestParam("portfolio") Long portfolioId) {
 	Portfolio portfolio = portfolioDao.findPortfolio(portfolioId);
-	logger.info(msg("delete portfolio <{0}>", portfolio));
+	logger.info(msgOld("delete portfolio <{0}>", portfolio));
 	portfolioDao.deletePortfolio(portfolio);
 	ModelAndView mav = new ModelAndView("redirect:/portfolio");
 	return mav;

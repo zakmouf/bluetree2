@@ -10,12 +10,12 @@
   </tr>
 </table>
 
-<form:form action="/stock/edit?stock=${param.stock}" method="post" modelAttribute="form">
+<form:form action="/stock/${stock.id}/edit" method="post" modelAttribute="form">
 
   <table>
     <tr>
       <td>Symbol :</td>
-      <td><form:input path="symbol" disabled="true" /></td>
+      <td><form:input path="symbol" /></td>
     </tr>
     <tr>
       <td>Name :</td>
