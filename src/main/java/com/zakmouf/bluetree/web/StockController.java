@@ -15,17 +15,16 @@ import org.springframework.web.servlet.ModelAndView;
 import com.zakmouf.bluetree.dao.StockDao;
 import com.zakmouf.bluetree.domain.Price;
 import com.zakmouf.bluetree.domain.Stock;
+import com.zakmouf.bluetree.service.PriceService;
 
 @Controller
 @RequestMapping("/stock")
 public class StockController extends BaseController {
 
-    private StockDao stockDao;
-
     @Autowired
-    public void setStockDao(StockDao stockDao) {
-	this.stockDao = stockDao;
-    }
+    private StockDao stockDao;
+    @Autowired
+    private PriceService priceService;
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getList() {
@@ -103,7 +102,7 @@ public class StockController extends BaseController {
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     public ModelAndView getView(@RequestParam("stock") Long stockId, HttpServletRequest request) {
 	Stock stock = stockDao.findById(stockId);
-	List<Price> prices = stockDao.findPrices(stock);
+	List<Price> prices = priceService.getPrices(stock);
 	generateChart(request, "stock", prices);
 	ModelAndView mav = new ModelAndView("stockView");
 	mav.getModel().put("stock", stock);

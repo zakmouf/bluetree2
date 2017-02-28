@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 
 import com.zakmouf.bluetree.dao.MarketDao;
 import com.zakmouf.bluetree.dao.PortfolioDao;
-import com.zakmouf.bluetree.dao.StockDao;
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Portfolio;
 import com.zakmouf.bluetree.domain.Position;
 import com.zakmouf.bluetree.domain.Price;
 import com.zakmouf.bluetree.domain.Stock;
 import com.zakmouf.bluetree.service.OptimizeService;
+import com.zakmouf.bluetree.service.PriceService;
 import com.zakmouf.bluetree.util.BasketUtil;
 import com.zakmouf.bluetree.util.PriceUtil;
 import com.zakmouf.bluetree.util.Randomizer;
@@ -39,24 +39,12 @@ public class OptimizeServiceImpl extends BaseService implements OptimizeService 
 
     private static final int OPTIMIZE_SUCCESS = 300;
 
+    @Autowired
     private PortfolioDao portfolioDao;
+    @Autowired
     private MarketDao marketDao;
-    private StockDao stockDao;
-
     @Autowired
-    public void setPortfolioDao(PortfolioDao portfolioDao) {
-	this.portfolioDao = portfolioDao;
-    }
-
-    @Autowired
-    public void setMarketDao(MarketDao marketDao) {
-	this.marketDao = marketDao;
-    }
-
-    @Autowired
-    public void setStockDao(StockDao stockDao) {
-	this.stockDao = stockDao;
-    }
+    private PriceService priceService;
 
     @Override
     public List<Position> optimize(Portfolio portfolio) {
@@ -73,7 +61,9 @@ public class OptimizeServiceImpl extends BaseService implements OptimizeService 
 	Date toDate = portfolio.getToDate();
 
 	// read indice
-	List<Price> indicePrices = stockDao.findPricesBetween(indice, fromDate, toDate);
+
+	List<Price> indicePrices = priceService.getPrices(indice);
+	indicePrices = PriceUtil.filterBetween(indicePrices, fromDate, toDate);
 	if (indicePrices.size() < 10) {
 	    throw new RuntimeException(msg("Indice <{0}> is empty", indice.getSymbol()));
 	}
@@ -88,7 +78,8 @@ public class OptimizeServiceImpl extends BaseService implements OptimizeService 
 	List<Stock> stocks = new ArrayList<Stock>();
 	List<List<Price>> stockPricesList = new ArrayList<List<Price>>();
 	for (Stock stock : initialStocks) {
-	    List<Price> stockPrices = stockDao.findPricesBetweenInclusive(stock, fromDate, toDate);
+	    List<Price> stockPrices = priceService.getPrices(stock);
+	    stockPrices = PriceUtil.filterBetweenInclusive(stockPrices, fromDate, toDate);
 	    if (stockPrices.isEmpty()) {
 		logger.debug(msg("Stock <{0}> is empty", stock.getSymbol()));
 	    } else {

@@ -29,24 +29,20 @@ import com.zakmouf.bluetree.dao.StockDao;
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Price;
 import com.zakmouf.bluetree.domain.Stock;
+import com.zakmouf.bluetree.service.PriceService;
 import com.zakmouf.bluetree.util.DateUtil;
+import com.zakmouf.bluetree.util.PriceUtil;
 
 @Controller
 @RequestMapping("/market")
 public class MarketController extends BaseController {
 
+    @Autowired
     private MarketDao marketDao;
+    @Autowired
     private StockDao stockDao;
-
     @Autowired
-    public void setMarketDao(MarketDao marketDao) {
-	this.marketDao = marketDao;
-    }
-
-    @Autowired
-    public void setStockDao(StockDao stockDao) {
-	this.stockDao = stockDao;
-    }
+    private PriceService priceService;
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getList(ModelMap model) {
@@ -100,7 +96,7 @@ public class MarketController extends BaseController {
     public ModelAndView getView(@RequestParam("market") Long marketId, HttpServletRequest request) {
 	Market market = marketDao.findById(marketId);
 	Stock indice = market.getIndice();
-	List<Price> prices = stockDao.findPrices(indice);
+	List<Price> prices = priceService.getPrices(indice);
 	generateChart(request, "market", prices);
 	List<Stock> stocks = marketDao.getStocks(market);
 	ModelAndView mav = new ModelAndView("marketView");
@@ -226,7 +222,8 @@ public class MarketController extends BaseController {
     }
 
     private void updateStock(Stock stock, Date startDate, Integer increment) {
-	Date lastDate = stockDao.findLastDate(stock);
+	List<Price> prices = priceService.getPrices(stock);
+	Date lastDate = PriceUtil.lastDate(prices);
 	if (lastDate == null) {
 	    lastDate = startDate;
 	} else {
@@ -259,7 +256,7 @@ public class MarketController extends BaseController {
 	if (logger.isDebugEnabled()) {
 	    logger.debug(msg("{0} : {1} -> {2} : {3}", stock, formatDate(fromDate), formatDate(toDate), prices.size()));
 	}
-	stockDao.insertPrices(stock, prices);
+	priceService.addPrices(stock, prices);
     }
 
     private String getLink(Stock stock, Date fromDate, Date toDate) {

@@ -1,6 +1,5 @@
 package com.zakmouf.bluetree.dao.impl;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -21,17 +20,9 @@ public abstract class BaseDaoImpl {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected String msg(String pattern, Object... arguments) {
-	return MessageFormat.format(pattern, arguments);
-    }
-
-    public BaseDaoImpl() {
-	logger.debug(msg("instantiate {0}", getClass()));
-    }
-
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 	this.jdbcTemplate = jdbcTemplate;
     }
