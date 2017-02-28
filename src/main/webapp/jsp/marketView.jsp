@@ -9,7 +9,8 @@
     <td><a href="<c:url value="/market/edit?market=${param.market}"/>">Edit</a></td>
     <td><a href="<c:url value="/market/delete?market=${param.market}"/>">Delete</a></td>
     <td><a href="<c:url value="/market/stock?market=${param.market}"/>">Stocks</a></td>
-    <td><a href="<c:url value="/market/update?market=${param.market}"/>">Update</a></td>
+    <td><a href="<c:url value="/market/names?market=${param.market}"/>">Names</a></td>
+    <td><a href="<c:url value="/market/prices?market=${param.market}"/>">Prices</a></td>
   </tr>
 </table>
 
