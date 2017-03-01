@@ -9,7 +9,7 @@
     <td><a href="<c:url value="/stock/${stock.id}/edit"/>">Edit</a></td>
     <td><a href="<c:url value="/stock/${stock.id}/delete"/>">Delete</a></td>
     <td><a href="<c:url value="/stock/${stock.id}/delprices"/>">Delete all prices</a></td>
-    <td><a href="<c:url value="/stock/${stock.id}/updnames"/>">Update name</a></td>
+    <td><a href="<c:url value="/stock/${stock.id}/updnames"/>">Update names</a></td>
     <td><a href="<c:url value="/stock/${stock.id}/updprices"/>">Update prices</a></td>
   </tr>
 </table>

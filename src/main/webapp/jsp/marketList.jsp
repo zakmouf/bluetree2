@@ -18,9 +18,9 @@
   </tr>
   <c:forEach items="${markets}" var="market">
     <tr>
-      <td><a href="<c:url value="/market/view?market=${market.id}"/>"><c:out value="${market.name}" /></a></td>
+      <td><a href="<c:url value="/market/${market.id}/view"/>"><c:out value="${market.name}" /></a></td>
       <td><c:out value="${market.riskless}" /></td>
-      <td><a href="<c:url value="/stock/view?stock=${market.indice.id}"/>"><c:out value="${market.indice.symbol}" /></a> ( <c:out value="${market.indice.name}" /> )</td>
+      <td><a href="<c:url value="/stock/${market.indice.id}/view"/>"><c:out value="${market.indice.symbol}" /></a> ( <c:out value="${market.indice.name}" /> )</td>
     </tr>
   </c:forEach>
 </table>

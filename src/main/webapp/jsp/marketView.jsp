@@ -6,11 +6,12 @@
 
 <table>
   <tr>
-    <td><a href="<c:url value="/market/edit?market=${param.market}"/>">Edit</a></td>
-    <td><a href="<c:url value="/market/delete?market=${param.market}"/>">Delete</a></td>
-    <td><a href="<c:url value="/market/stock?market=${param.market}"/>">Stocks</a></td>
-    <td><a href="<c:url value="/market/names?market=${param.market}"/>">Names</a></td>
-    <td><a href="<c:url value="/market/prices?market=${param.market}"/>">Prices</a></td>
+    <td><a href="<c:url value="/market/${market.id}/edit"/>">Edit</a></td>
+    <td><a href="<c:url value="/market/${market.id}/delete"/>">Delete</a></td>
+    <td><a href="<c:url value="/market/${market.id}/setstocks"/>">Set stocks</a></td>
+    <td><a href="<c:url value="/market/${market.id}/delprices"/>">Delete all prices</a></td>
+    <td><a href="<c:url value="/market/${market.id}/updnames"/>">Update names</a></td>
+    <td><a href="<c:url value="/market/${market.id}/updprices"/>">Update prices</a></td>
   </tr>
 </table>
 
@@ -22,10 +23,6 @@
   <tr>
     <td>Riskless :</td>
     <td><c:out value="${market.riskless}" /></td>
-  </tr>
-  <tr>
-    <td>Indice :</td>
-    <td><a href="<c:url value="/stock/view?stock=${market.indice.id}"/>"><c:out value="${market.indice.symbol}" /></a> ( <c:out value="${market.indice.name}" /> )</td>
   </tr>
 </table>
 
@@ -45,11 +42,24 @@
   <tr>
     <th>Symbol</th>
     <th>Name</th>
+    <th>Date count</th>
+    <th>First date</th>
+    <th>Last date</th>
+  </tr>
+  <tr>
+    <td><a href="<c:url value="/stock/${market.indice.id}/view"/>"><c:out value="${market.indice.symbol}" /></a></td>
+    <td><c:out value="${market.indice.name}" /></td>
+    <td><c:out value="${market.indice.dateCount}" /></td>
+    <td><fmt:formatDate value="${market.indice.firstDate}" pattern="yyyy-MM-dd" /></td>
+    <td><fmt:formatDate value="${market.indice.lastDate}" pattern="yyyy-MM-dd" /></td>
   </tr>
   <c:forEach items="${stocks}" var="stock">
     <tr>
-      <td><a href="<c:url value="/stock/view?stock=${stock.id}"/>"><c:out value="${stock.symbol}" /></a></td>
+      <td><a href="<c:url value="/stock/${stock.id}/view"/>"><c:out value="${stock.symbol}" /></a></td>
       <td><c:out value="${stock.name}" /></td>
+      <td><c:out value="${stock.dateCount}" /></td>
+      <td><fmt:formatDate value="${stock.firstDate}" pattern="yyyy-MM-dd" /></td>
+      <td><fmt:formatDate value="${stock.lastDate}" pattern="yyyy-MM-dd" /></td>
     </tr>
   </c:forEach>
 </table>

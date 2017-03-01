@@ -13,6 +13,8 @@ public interface PriceService {
 
     void addPrices(Stock stock, List<Price> prices);
 
+    void deleteAllPrices(List<Stock> stocks);
+
     void deleteAllPrices(Stock stock);
 
 }

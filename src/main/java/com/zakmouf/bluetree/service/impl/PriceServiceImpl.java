@@ -47,4 +47,12 @@ public class PriceServiceImpl extends BaseServiceImpl implements PriceService {
 	priceDao.deleteAll(stock.getId());
     }
 
+    @Override
+    @Transactional
+    public void deleteAllPrices(List<Stock> stocks) {
+	for (Stock stock : stocks) {
+	    deleteAllPrices(stock);
+	}
+    }
+
 }

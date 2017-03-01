@@ -10,7 +10,7 @@
   </tr>
 </table>
 
-<form:form action="/market/stock?market=${param.market}" method="post" modelAttribute="form">
+<form:form action="/market/${market.id}/setstocks" method="post" modelAttribute="form">
 
   <table>
     <tr>

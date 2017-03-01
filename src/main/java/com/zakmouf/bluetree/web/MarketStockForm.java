@@ -4,6 +4,10 @@ public class MarketStockForm {
 
     private String text;
 
+    public MarketStockForm() {
+	text = "symbol";
+    }
+
     public String getText() {
 	return text;
     }

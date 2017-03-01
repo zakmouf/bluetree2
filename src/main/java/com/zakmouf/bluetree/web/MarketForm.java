@@ -8,6 +8,11 @@ public class MarketForm {
 
     private Long indiceId;
 
+    public MarketForm() {
+	name = "name";
+	riskless = 0.0D;
+    }
+
     public Long getIndiceId() {
 	return indiceId;
     }
