@@ -1,5 +1,5 @@
 
-drop table if exists t_portfolio_stock;
+drop table if exists t_holding;
 drop table if exists t_portfolio;
 drop table if exists t_market_stock;
 drop table if exists t_market;
@@ -83,17 +83,17 @@ alter table t_portfolio add constraint pk_portfolio primary key (f_id);
 alter table t_portfolio add constraint ux_portfolio_1 unique key (f_name);
 alter table t_portfolio add constraint fk_portfolio_1 foreign key (market_id) references t_market (f_id);
 
--- t_portfolio_stock
+-- t_holding
 
-drop table if exists t_portfolio_stock;
+drop table if exists t_holding;
 
-create table t_portfolio_stock (
+create table t_holding (
   portfolio_id  bigint unsigned not null,
   stock_id      bigint unsigned not null,
   f_weight      double not null
 )
 engine = innodb;
 
-alter table t_portfolio_stock add constraint pk_portfolio_stock primary key (portfolio_id, stock_id);
-alter table t_portfolio_stock add constraint fk_portfolio_stock_1 foreign key (portfolio_id) references t_portfolio (f_id) on delete cascade;
-alter table t_portfolio_stock add constraint fk_portfolio_stock_2 foreign key (stock_id) references t_stock (f_id);
+alter table t_holding add constraint pk_holding primary key (portfolio_id, stock_id);
+alter table t_holding add constraint fk_holding_1 foreign key (portfolio_id) references t_portfolio (f_id) on delete cascade;
+alter table t_holding add constraint fk_holding_2 foreign key (stock_id) references t_stock (f_id);

@@ -16,6 +16,8 @@ public class Portfolio extends BaseEntity {
 
     private Integer size;
 
+    private Market market;
+
     public Double getBeta() {
 	return beta;
     }
@@ -54,6 +56,14 @@ public class Portfolio extends BaseEntity {
 
     public void setToDate(Date toDate) {
 	this.toDate = toDate;
+    }
+
+    public Market getMarket() {
+	return market;
+    }
+
+    public void setMarket(Market market) {
+	this.market = market;
     }
 
     @Override

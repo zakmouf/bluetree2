@@ -3,13 +3,14 @@ package com.zakmouf.bluetree.dao;
 import java.util.List;
 
 import com.zakmouf.bluetree.domain.Price;
+import com.zakmouf.bluetree.domain.Stock;
 
 public interface PriceDao {
 
-    List<Price> findAll(Long stockId);
+    List<Price> findAll(Stock stock);
 
-    void insert(Long stockId, Price price);
+    void insert(Stock stock, Price price);
 
-    void deleteAll(Long stockId);
+    void deleteAll(Stock stock);
 
 }

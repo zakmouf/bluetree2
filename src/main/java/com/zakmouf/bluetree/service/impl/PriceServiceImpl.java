@@ -20,7 +20,7 @@ public class PriceServiceImpl extends BaseServiceImpl implements PriceService {
     @Override
     @Transactional(readOnly = true)
     public List<Price> getPrices(Stock stock) {
-	List<Price> prices = priceDao.findAll(stock.getId());
+	List<Price> prices = priceDao.findAll(stock);
 	return prices;
     }
 
@@ -28,7 +28,7 @@ public class PriceServiceImpl extends BaseServiceImpl implements PriceService {
     @Transactional
     public void addPrice(Stock stock, Price price) {
 	logger.debug(msg("insert price=[%1$s] for stock=[%2$s]", price, stock));
-	priceDao.insert(stock.getId(), price);
+	priceDao.insert(stock, price);
 
     }
 
@@ -44,7 +44,7 @@ public class PriceServiceImpl extends BaseServiceImpl implements PriceService {
     @Transactional
     public void deleteAllPrices(Stock stock) {
 	logger.info(msg("delete all prices for stock=[%1$s]", stock));
-	priceDao.deleteAll(stock.getId());
+	priceDao.deleteAll(stock);
     }
 
     @Override

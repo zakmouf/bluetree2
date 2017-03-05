@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.zakmouf.bluetree.dao.PortfolioDao;
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Portfolio;
-import com.zakmouf.bluetree.domain.Position;
+import com.zakmouf.bluetree.domain.Holding;
 import com.zakmouf.bluetree.domain.Price;
 import com.zakmouf.bluetree.domain.Stock;
 import com.zakmouf.bluetree.service.MarketService;
@@ -47,14 +47,14 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
     private PriceService priceService;
 
     @Override
-    public List<Position> optimize(Portfolio portfolio) {
+    public List<Holding> optimize(Portfolio portfolio) {
 
 	logger.info(msgOld("optimize portfolio <{0}>", portfolio));
 
 	//
 	// read data
 	//
-	Market market = portfolioDao.getMarket(portfolio);
+	Market market = portfolio.getMarket();
 	Stock indice = market.getIndice();
 	List<Stock> initialStocks = marketService.getStocks(market);
 	Date fromDate = portfolio.getFromDate();
@@ -224,25 +224,25 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 	}
 	logger.info("Finish optimization");
 
-	List<Position> positions = new ArrayList<Position>();
+	List<Holding> positions = new ArrayList<Holding>();
 	for (int i = 0; i < points.length; i++) {
 	    if (points[i] != 0) {
 		Stock stock = stocks.get(i);
 		Double weight = (points[i] + 0.0D) / pointTotal;
-		Position position = new Position();
+		Holding position = new Holding();
 		position.setStock(stock);
 		position.setWeight(weight);
 		positions.add(position);
 	    }
 	}
-	Collections.sort(positions, new Comparator<Position>() {
+	Collections.sort(positions, new Comparator<Holding>() {
 	    @Override
-	    public int compare(Position o1, Position o2) {
+	    public int compare(Holding o1, Holding o2) {
 		return o2.getWeight().compareTo(o1.getWeight());
 	    }
 	});
 
-	for (Position position : positions) {
+	for (Holding position : positions) {
 	    logger.debug(msgOld("Stock <{0}> Weight <{1,number,0.00%}>", position.getStock().getSymbol(),
 		    position.getWeight()));
 	}
@@ -251,10 +251,10 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 
 	if (positions.size() > size) {
 
-	    Position position = (Position) positions.get(size - 1);
+	    Holding position = (Holding) positions.get(size - 1);
 	    double weight = position.getWeight().doubleValue();
 
-	    Iterator<Position> iterator = positions.iterator();
+	    Iterator<Holding> iterator = positions.iterator();
 	    while (iterator.hasNext()) {
 		position = iterator.next();
 		if (position.getWeight().doubleValue() < weight) {
@@ -278,7 +278,7 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
 
 	}
 
-	for (Position position : positions) {
+	for (Holding position : positions) {
 	    logger.debug(msgOld("Stock <{0}> Weight <{1,number,0.00%}>", position.getStock().getSymbol(),
 		    position.getWeight()));
 	}

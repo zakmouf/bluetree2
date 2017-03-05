@@ -2,30 +2,27 @@ package com.zakmouf.bluetree.dao;
 
 import java.util.List;
 
-import com.zakmouf.bluetree.domain.Market;
+import com.zakmouf.bluetree.domain.Holding;
 import com.zakmouf.bluetree.domain.Portfolio;
-import com.zakmouf.bluetree.domain.Position;
 
 public interface PortfolioDao {
 
-    Portfolio findPortfolio(Long id);
+    Portfolio findById(Long id);
 
-    Portfolio findPortfolio(String name);
+    Portfolio findByName(String name);
 
-    List<Portfolio> getPortfolios();
+    List<Portfolio> findAll();
 
-    void insertPortfolio(Portfolio portfolio);
+    void insert(Portfolio portfolio);
 
-    void updatePortfolio(Portfolio portfolio);
+    void update(Portfolio portfolio);
 
-    void deletePortfolio(Portfolio portfolio);
+    void delete(Portfolio portfolio);
 
-    Market getMarket(Portfolio portfolio);
+    List<Holding> findHoldings(Portfolio portfolio);
 
-    void setMarket(Portfolio portfolio, Market market);
+    void insertHolding(Portfolio portfolio, Holding holding);
 
-    List<Position> getPositions(Portfolio portfolio);
-
-    void setPositions(Portfolio portfolio, List<Position> positions);
+    void deleteAllHoldings(Portfolio portfolio);
 
 }

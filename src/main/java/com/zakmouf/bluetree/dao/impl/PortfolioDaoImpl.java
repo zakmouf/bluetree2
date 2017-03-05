@@ -4,118 +4,101 @@ import java.sql.Types;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.zakmouf.bluetree.dao.PortfolioDao;
-import com.zakmouf.bluetree.dao.mapper.MarketRowMapper;
+import com.zakmouf.bluetree.dao.mapper.HoldingRowMapper;
 import com.zakmouf.bluetree.dao.mapper.PortfolioRowMapper;
-import com.zakmouf.bluetree.dao.mapper.PositionRowMapper;
-import com.zakmouf.bluetree.domain.Market;
+import com.zakmouf.bluetree.domain.Holding;
 import com.zakmouf.bluetree.domain.Portfolio;
-import com.zakmouf.bluetree.domain.Position;
 
 @Component
 public class PortfolioDaoImpl extends BaseDaoImpl implements PortfolioDao {
 
     @Override
-    public Portfolio findPortfolio(Long id) {
-	String sql = "select * from portfolios where portfolio_id=?";
+    @Transactional(readOnly = true)
+    public Portfolio findById(Long id) {
+	String sql = "select p.* from v_portfolio p where p.portfolio_id = ?";
 	Object[] args = { id };
 	int[] argTypes = { Types.NUMERIC };
-	return queryForObject(sql, args, argTypes, new PortfolioRowMapper());
+	Portfolio portfolio = queryForObject(sql, args, argTypes, new PortfolioRowMapper());
+	return portfolio;
     }
 
     @Override
-    public Portfolio findPortfolio(String name) {
-	String sql = "select * from portfolios where portfolio_name=?";
+    @Transactional(readOnly = true)
+    public Portfolio findByName(String name) {
+	String sql = "select p.* from v_portfolio p where p.portfolio_name = ?";
 	Object[] args = { name };
 	int[] argTypes = { Types.VARCHAR };
-	return queryForObject(sql, args, argTypes, new PortfolioRowMapper());
+	Portfolio portfolio = queryForObject(sql, args, argTypes, new PortfolioRowMapper());
+	return portfolio;
     }
 
     @Override
-    public List<Portfolio> getPortfolios() {
+    @Transactional(readOnly = true)
+    public List<Portfolio> findAll() {
 	String sql = "select * from portfolios order by portfolio_name";
 	Object[] args = {};
 	int[] argTypes = {};
-	return queryForList(sql, args, argTypes, new PortfolioRowMapper());
+	List<Portfolio> portfolios = queryForList(sql, args, argTypes, new PortfolioRowMapper());
+	return portfolios;
     }
 
     @Override
-    public void insertPortfolio(Portfolio portfolio) {
-	String sql = "insert into portfolios values (null, ?, ?, ?, ?, ?)";
+    @Transactional
+    public void insert(Portfolio portfolio) {
+	portfolio.setId(getNextId());
+	String sql = "insert into t_portfolio values (?, ?, ?, ?, ?, ?, ?)";
+	Object[] args = { portfolio.getId(), portfolio.getName(), portfolio.getFromDate(), portfolio.getToDate(),
+		portfolio.getBeta(), portfolio.getSize(), portfolio.getMarket().getId() };
+	int[] argTypes = { Types.NUMERIC, Types.VARCHAR, Types.DATE, Types.DATE, Types.NUMERIC, Types.NUMERIC,
+		Types.NUMERIC };
+	insert(sql, args, argTypes);
+    }
+
+    @Override
+    @Transactional
+    public void update(Portfolio portfolio) {
+	String sql = "update t_portfolio set f_name = ?, f_from_date = ?, f_to_date = ?, f_beta = ?, f_size = ?, market_id = ? where f_id = ?";
 	Object[] args = { portfolio.getName(), portfolio.getFromDate(), portfolio.getToDate(), portfolio.getBeta(),
-		portfolio.getSize() };
-	int[] argTypes = { Types.VARCHAR, Types.DATE, Types.DATE, Types.NUMERIC, Types.NUMERIC };
-	oldInsert(sql, args, argTypes, portfolio);
-    }
-
-    @Override
-    public void updatePortfolio(Portfolio portfolio) {
-	String sql = "update portfolios set portfolio_from_date=?, portfolio_to_date=? where portfolio_id=?";
-	Object[] args = { portfolio.getFromDate(), portfolio.getToDate(), portfolio.getId() };
-	int[] argTypes = { Types.DATE, Types.DATE, Types.NUMERIC };
+		portfolio.getSize(), portfolio.getMarket().getId(), portfolio.getId() };
+	int[] argTypes = { Types.VARCHAR, Types.DATE, Types.DATE, Types.NUMERIC, Types.NUMERIC, Types.NUMERIC,
+		Types.NUMERIC };
 	update(sql, args, argTypes);
     }
 
     @Override
-    public void deletePortfolio(Portfolio portfolio) {
-	//
-	String sql = "delete from portfolios where portfolio_id=?";
+    @Transactional
+    public void delete(Portfolio portfolio) {
+	String sql = "delete from t_portfolio where f_id = ?";
 	Object[] args = { portfolio.getId() };
 	int[] argTypes = { Types.NUMERIC };
-	update(sql, args, argTypes);
-	//
-	sql = "delete from portfolio_lnk_stock where pls_portfolio_id=?";
-	update(sql, args, argTypes);
-	//
-	sql = "delete from portfolio_lnk_market where plm_portfolio_id=?";
-	update(sql, args, argTypes);
+	delete(sql, args, argTypes);
     }
 
     @Override
-    public Market getMarket(Portfolio portfolio) {
-	String sql = "select * from portfolio_lnk_market, markets where market_id=plm_market_id and plm_portfolio_id=?";
+    public List<Holding> findHoldings(Portfolio portfolio) {
+	String sql = "select h.* from v_holding where h.portfolio_id = ? order by h.holding_weight desc";
 	Object[] args = { portfolio.getId() };
 	int[] argTypes = { Types.NUMERIC };
-	return queryForObject(sql, args, argTypes, new MarketRowMapper());
+	return queryForList(sql, args, argTypes, new HoldingRowMapper());
     }
 
     @Override
-    public void setMarket(Portfolio portfolio, Market market) {
-	//
-	String sql = "delete from portfolio_lnk_market where plm_portfolio_id=?";
-	Object[] args = { portfolio.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	update(sql, args, argTypes);
-	//
-	sql = "insert into portfolio_lnk_market values (?, ?)";
-	args = new Object[] { portfolio.getId(), market.getId() };
-	argTypes = new int[] { Types.NUMERIC, Types.NUMERIC };
-	update(sql, args, argTypes);
+    public void insertHolding(Portfolio portfolio, Holding holding) {
+	String sql = "insert into t_holding values (?, ?, ?)";
+	Object[] args = new Object[] { portfolio.getId(), holding.getStock().getId(), holding.getWeight() };
+	int[] argTypes = new int[] { Types.NUMERIC, Types.NUMERIC, Types.NUMERIC };
+	insert(sql, args, argTypes);
     }
 
     @Override
-    public List<Position> getPositions(Portfolio portfolio) {
-	String sql = "select * from portfolio_lnk_stock, stocks where pls_stock_id=stock_id and pls_portfolio_id=? order by pls_weight desc";
+    public void deleteAllHoldings(Portfolio portfolio) {
+	String sql = "delete from t_holding where portfolio_id = ?";
 	Object[] args = { portfolio.getId() };
 	int[] argTypes = { Types.NUMERIC };
-	return queryForList(sql, args, argTypes, new PositionRowMapper());
-    }
-
-    @Override
-    public void setPositions(Portfolio portfolio, List<Position> positions) {
-	//
-	String sql = "delete from portfolio_lnk_stock where pls_portfolio_id=?";
-	Object[] args = { portfolio.getId() };
-	int[] argTypes = { Types.NUMERIC };
-	update(sql, args, argTypes);
-	//
-	for (Position position : positions) {
-	    sql = "insert into portfolio_lnk_stock values (?, ?, ?)";
-	    args = new Object[] { portfolio.getId(), position.getStock().getId(), position.getWeight() };
-	    argTypes = new int[] { Types.NUMERIC, Types.NUMERIC, Types.NUMERIC };
-	    update(sql, args, argTypes);
-	}
+	delete(sql, args, argTypes);
     }
 
 }

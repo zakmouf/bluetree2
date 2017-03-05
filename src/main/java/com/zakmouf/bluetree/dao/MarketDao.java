@@ -19,10 +19,10 @@ public interface MarketDao {
 
     void delete(Market market);
 
-    List<Stock> findStocks(Long marketId);
+    List<Stock> findStocks(Market market);
 
-    void insertStock(Long marketId, Long stockId);
+    void insertStock(Market market, Stock stock);
 
-    void deleteStocks(Long marketId);
+    void deleteAllStocks(Market market);
 
 }

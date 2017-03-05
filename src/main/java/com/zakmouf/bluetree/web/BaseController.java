@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.DateFormat;
-import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,11 +28,6 @@ import com.zakmouf.bluetree.util.DateUtil;
 public class BaseController {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Deprecated
-    protected String msgOld(String pattern, Object... arguments) {
-	return MessageFormat.format(pattern, arguments);
-    }
 
     protected String msg(String pattern, Object... arguments) {
 	return String.format(pattern, arguments);

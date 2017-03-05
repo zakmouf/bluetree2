@@ -8,13 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-
-import com.zakmouf.bluetree.dao.mapper.IntegerRowMapper;
-import com.zakmouf.bluetree.domain.BaseEntity;
 
 public abstract class BaseDaoImpl {
 
@@ -70,30 +64,6 @@ public abstract class BaseDaoImpl {
     protected int delete(String sql, Object[] args, int[] argTypes) throws DataAccessException {
 	int result = jdbcTemplate.update(sql, args, argTypes);
 	return result;
-    }
-
-    ////////
-
-    protected int oldInsert(String sql, Object[] args, int[] argTypes, BaseEntity entity) throws DataAccessException {
-	GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-	PreparedStatementCreatorFactory factory = new PreparedStatementCreatorFactory(sql, argTypes);
-	factory.setReturnGeneratedKeys(true);
-	PreparedStatementCreator creator = factory.newPreparedStatementCreator(args);
-	int result = jdbcTemplate.update(creator, keyHolder);
-	entity.setId(keyHolder.getKey().longValue());
-	return result;
-    }
-
-    protected PreparedStatementCreator newPreparedStatementCreator(String sql, Object[] args, int[] argTypes) {
-	PreparedStatementCreatorFactory factory = new PreparedStatementCreatorFactory(sql, argTypes);
-	factory.setReturnGeneratedKeys(true);
-	PreparedStatementCreator creator = factory.newPreparedStatementCreator(args);
-	return creator;
-    }
-
-    protected Integer oldQueryForInteger(String sql, Object[] args, int[] argTypes) throws DataAccessException {
-	List<Integer> list = queryForList(sql, args, argTypes, new IntegerRowMapper());
-	return list.isEmpty() ? null : list.get(0);
     }
 
 }

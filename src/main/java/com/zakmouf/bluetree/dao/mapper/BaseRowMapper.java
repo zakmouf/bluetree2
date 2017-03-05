@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Portfolio;
-import com.zakmouf.bluetree.domain.Position;
+import com.zakmouf.bluetree.domain.Holding;
 import com.zakmouf.bluetree.domain.Price;
 import com.zakmouf.bluetree.domain.Stock;
 
@@ -90,20 +90,6 @@ public abstract class BaseRowMapper {
 	return rs.wasNull() ? null : new Date(timestamp.getTime());
     }
 
-    protected Market mapMarket(ResultSet rs) throws SQLException {
-	return mapMarket(rs, "market");
-    }
-
-    protected Market mapMarket(ResultSet rs, String prefix) throws SQLException {
-	Market market = new Market();
-	market.setId(getLong(rs, prefix + "_id"));
-	market.setName(getString(rs, prefix + "_name"));
-	market.setRiskless(getDouble(rs, prefix + "_riskless"));
-	Stock indice = mapStock(rs, "indice");
-	market.setIndice(indice);
-	return market;
-    }
-
     protected Stock mapStock(ResultSet rs) throws SQLException {
 	return mapStock(rs, "stock");
     }
@@ -120,14 +106,20 @@ public abstract class BaseRowMapper {
     }
 
     protected Price mapPrice(ResultSet rs) throws SQLException {
-	return mapPrice(rs, "price");
+	Price price = new Price();
+	price.setDate(getDate(rs, "price_date"));
+	price.setValue(getDouble(rs, "price_value"));
+	return price;
     }
 
-    protected Price mapPrice(ResultSet rs, String prefix) throws SQLException {
-	Price price = new Price();
-	price.setDate(getDate(rs, prefix + "_date"));
-	price.setValue(getDouble(rs, prefix + "_value"));
-	return price;
+    protected Market mapMarket(ResultSet rs) throws SQLException {
+	Market market = new Market();
+	market.setId(getLong(rs, "market_id"));
+	market.setName(getString(rs, "market_name"));
+	market.setRiskless(getDouble(rs, "market_riskless"));
+	Stock indice = mapStock(rs, "indice");
+	market.setIndice(indice);
+	return market;
     }
 
     protected Portfolio mapPortfolio(ResultSet rs) throws SQLException {
@@ -138,14 +130,17 @@ public abstract class BaseRowMapper {
 	portfolio.setToDate(getDate(rs, "portfolio_to_date"));
 	portfolio.setBeta(getDouble(rs, "portfolio_beta"));
 	portfolio.setSize(getInteger(rs, "portfolio_size"));
+	Market market = mapMarket(rs);
+	portfolio.setMarket(market);
 	return portfolio;
     }
 
-    protected Position mapPosition(ResultSet rs) throws SQLException {
-	Position position = new Position();
-	position.setStock(mapStock(rs));
-	position.setWeight(getDouble(rs, "pls_weight"));
-	return position;
+    protected Holding mapHolding(ResultSet rs) throws SQLException {
+	Holding holding = new Holding();
+	Stock stock = mapStock(rs, "stock");
+	holding.setStock(stock);
+	holding.setWeight(getDouble(rs, "holding_weight"));
+	return holding;
     }
 
 }

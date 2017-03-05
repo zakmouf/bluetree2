@@ -1,6 +1,6 @@
 package com.zakmouf.bluetree.domain;
 
-public class Position extends BaseObject {
+public class Holding extends BaseObject {
 
     private static final long serialVersionUID = 1L;
 

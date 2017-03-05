@@ -20,13 +20,15 @@ public class MarketServiceImpl extends BaseServiceImpl implements MarketService 
     @Override
     @Transactional(readOnly = true)
     public Market getMarket(Long id) {
-	return marketDao.findById(id);
+	Market market = marketDao.findById(id);
+	return market;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Market getMarket(String name) {
-	return marketDao.findByName(name);
+	Market market = marketDao.findByName(name);
+	return market;
     }
 
     @Override
@@ -58,18 +60,18 @@ public class MarketServiceImpl extends BaseServiceImpl implements MarketService 
     @Override
     @Transactional(readOnly = true)
     public List<Stock> getStocks(Market market) {
-	List<Stock> stocks = marketDao.findStocks(market.getId());
+	List<Stock> stocks = marketDao.findStocks(market);
 	return stocks;
     }
 
     @Override
     @Transactional
     public void setStocks(Market market, List<Stock> stocks) {
-	logger.info(msg("delete stocks for market=[%1$s]", market));
-	marketDao.deleteStocks(market.getId());
+	logger.info(msg("delete all stocks for market=[%1$s]", market));
+	marketDao.deleteAllStocks(market);
 	for (Stock stock : stocks) {
 	    logger.info(msg("insert stock=[%1$s] for market=[%2$s]", stock, market));
-	    marketDao.insertStock(market.getId(), stock.getId());
+	    marketDao.insertStock(market, stock);
 	}
     }
 

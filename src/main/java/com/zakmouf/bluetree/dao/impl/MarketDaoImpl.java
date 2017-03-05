@@ -18,7 +18,7 @@ public class MarketDaoImpl extends BaseDaoImpl implements MarketDao {
     @Override
     @Transactional(readOnly = true)
     public Market findById(Long id) {
-	String sql = "select * from v_market m where m.market_id = ?";
+	String sql = "select m.* from v_market m where m.market_id = ?";
 	Object[] args = { id };
 	int[] argTypes = { Types.NUMERIC };
 	Market market = queryForObject(sql, args, argTypes, new MarketRowMapper());
@@ -28,7 +28,7 @@ public class MarketDaoImpl extends BaseDaoImpl implements MarketDao {
     @Override
     @Transactional(readOnly = true)
     public Market findByName(String name) {
-	String sql = "select * from v_market m where m.market_name = ?";
+	String sql = "select m.* from v_market m where m.market_name = ?";
 	Object[] args = { name };
 	int[] argTypes = { Types.VARCHAR };
 	Market market = queryForObject(sql, args, argTypes, new MarketRowMapper());
@@ -38,7 +38,7 @@ public class MarketDaoImpl extends BaseDaoImpl implements MarketDao {
     @Override
     @Transactional(readOnly = true)
     public List<Market> findAll() {
-	String sql = "select * from v_market m order by m.market_name";
+	String sql = "select m.* from v_market m order by m.market_name";
 	Object[] args = {};
 	int[] argTypes = {};
 	List<Market> markets = queryForList(sql, args, argTypes, new MarketRowMapper());
@@ -75,9 +75,9 @@ public class MarketDaoImpl extends BaseDaoImpl implements MarketDao {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Stock> findStocks(Long marketId) {
+    public List<Stock> findStocks(Market market) {
 	String sql = "select s.* from t_market_stock ms join v_stock s on ms.stock_id = s.stock_id where ms.market_id = ? order by s.stock_symbol";
-	Object[] args = { marketId };
+	Object[] args = { market.getId() };
 	int[] argTypes = { Types.NUMERIC };
 	List<Stock> stocks = queryForList(sql, args, argTypes, new StockRowMapper());
 	return stocks;
@@ -85,18 +85,18 @@ public class MarketDaoImpl extends BaseDaoImpl implements MarketDao {
 
     @Override
     @Transactional
-    public void insertStock(Long marketId, Long stockId) {
+    public void insertStock(Market market, Stock stock) {
 	String sql = "insert into t_market_stock (market_id, stock_id) values (?, ?)";
-	Object[] args = new Object[] { marketId, stockId };
+	Object[] args = new Object[] { market.getId(), stock.getId() };
 	int[] argTypes = new int[] { Types.NUMERIC, Types.NUMERIC };
 	insert(sql, args, argTypes);
     }
 
     @Override
     @Transactional
-    public void deleteStocks(Long marketId) {
+    public void deleteAllStocks(Market market) {
 	String sql = "delete from t_market_stock where market_id = ?";
-	Object[] args = { marketId };
+	Object[] args = { market.getId() };
 	int[] argTypes = { Types.NUMERIC };
 	delete(sql, args, argTypes);
     }

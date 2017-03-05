@@ -36,7 +36,7 @@ public class Market extends BaseEntity {
 
     @Override
     public String toString() {
-	return msg("[{0},{1},{2}]", id, name, riskless);
+	return msg("[{0},{1}]", id, name);
     }
 
 }

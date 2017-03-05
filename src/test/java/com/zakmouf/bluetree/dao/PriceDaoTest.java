@@ -30,9 +30,8 @@ public class PriceDaoTest extends BaseTest {
 
 	Stock stock = new Stock("symbol");
 	stockDao.insert(stock);
-	Long stockId = stock.getId();
 
-	List<Price> prices = priceDao.findAll(stockId);
+	List<Price> prices = priceDao.findAll(stock);
 	Assert.assertNotNull(prices);
 	Assert.assertTrue(prices.isEmpty());
 
@@ -43,15 +42,15 @@ public class PriceDaoTest extends BaseTest {
 	price.setDate(date);
 	price.setValue(value);
 
-	priceDao.insert(stockId, price);
+	priceDao.insert(stock, price);
 
-	prices = priceDao.findAll(stockId);
+	prices = priceDao.findAll(stock);
 	Assert.assertNotNull(prices);
 	Assert.assertTrue(prices.size() == 1);
 
-	priceDao.deleteAll(stockId);
+	priceDao.deleteAll(stock);
 
-	prices = priceDao.findAll(stockId);
+	prices = priceDao.findAll(stock);
 	Assert.assertNotNull(prices);
 	Assert.assertTrue(prices.isEmpty());
 
