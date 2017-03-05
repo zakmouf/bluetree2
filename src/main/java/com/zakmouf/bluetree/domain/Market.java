@@ -10,6 +10,14 @@ public class Market extends BaseEntity {
 
     private Stock indice;
 
+    public Market() {
+
+    }
+
+    public Market(String name) {
+	setName(name);
+    }
+
     public String getName() {
 	return name;
     }
@@ -36,7 +44,7 @@ public class Market extends BaseEntity {
 
     @Override
     public String toString() {
-	return msg("[{0},{1}]", id, name);
+	return msg("id=%1$d,name=%2$s,riskless=%3$.2f", id, name, riskless);
     }
 
 }

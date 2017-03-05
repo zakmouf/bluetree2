@@ -18,6 +18,14 @@ public class Portfolio extends BaseEntity {
 
     private Market market;
 
+    public Portfolio() {
+
+    }
+
+    public Portfolio(String name) {
+	setName(name);
+    }
+
     public Double getBeta() {
 	return beta;
     }
@@ -68,7 +76,7 @@ public class Portfolio extends BaseEntity {
 
     @Override
     public String toString() {
-	return msg("[{0},{1}]", id, name);
+	return msg("id=%1$d,name=%2$s", id, name);
     }
 
 }

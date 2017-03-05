@@ -23,7 +23,7 @@ import com.zakmouf.bluetree.domain.Stock;
 import com.zakmouf.bluetree.service.PriceService;
 import com.zakmouf.bluetree.service.StockService;
 import com.zakmouf.bluetree.service.UpdateService;
-import com.zakmouf.bluetree.util.PriceUtil;
+import com.zakmouf.bluetree.util.PriceUtils;
 
 @Component
 public class UpdateServiceImpl extends BaseServiceImpl implements UpdateService {
@@ -78,7 +78,7 @@ public class UpdateServiceImpl extends BaseServiceImpl implements UpdateService 
 	Date fromDate = priceStartDate;
 
 	List<Price> prices = priceService.getPrices(stock);
-	Date lastDate = PriceUtil.lastDate(prices);
+	Date lastDate = PriceUtils.lastDate(prices);
 	if (lastDate != null) {
 	    fromDate = DateUtils.addDays(lastDate, 1);
 	}

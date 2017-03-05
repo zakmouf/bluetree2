@@ -20,11 +20,6 @@ public class Stock extends BaseEntity implements Comparable<Stock> {
 	setSymbol(symbol);
     }
 
-    public Stock(String symbol, String name) {
-	setSymbol(symbol);
-	setName(name);
-    }
-
     public String getSymbol() {
 	return symbol;
     }
@@ -67,14 +62,7 @@ public class Stock extends BaseEntity implements Comparable<Stock> {
 
     @Override
     public String toString() {
-	StringBuffer buf = new StringBuffer();
-	buf.append(msg("id={0,number,0}", id));
-	buf.append(msg(",symbol=\"{0}\"", symbol));
-	buf.append(msg(",name=\"{0}\"", name));
-	buf.append(msg(",dateCount={0}", dateCount));
-	buf.append(msg(",firstDate={0,date,yyyy-MM-dd}", firstDate));
-	buf.append(msg(",lastDate={0,date,yyyy-MM-dd}", lastDate));
-	return buf.toString();
+	return msg("id=%1$d,symbol=%2$s,name=%3$s", id, symbol, name);
     }
 
     @Override

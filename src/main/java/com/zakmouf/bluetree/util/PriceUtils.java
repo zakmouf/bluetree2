@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.zakmouf.bluetree.domain.Price;
 
-public abstract class PriceUtil {
+public abstract class PriceUtils {
 
     public static Price firstPrice(List<Price> prices) {
 	return prices.isEmpty() ? null : prices.get(0);

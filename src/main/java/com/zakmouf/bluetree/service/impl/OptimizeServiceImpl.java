@@ -1,37 +1,35 @@
 package com.zakmouf.bluetree.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.zakmouf.bluetree.dao.PortfolioDao;
+import com.zakmouf.bluetree.domain.Holding;
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Portfolio;
-import com.zakmouf.bluetree.domain.Holding;
 import com.zakmouf.bluetree.domain.Price;
 import com.zakmouf.bluetree.domain.Stock;
 import com.zakmouf.bluetree.service.MarketService;
 import com.zakmouf.bluetree.service.OptimizeService;
 import com.zakmouf.bluetree.service.PriceService;
-import com.zakmouf.bluetree.util.BasketUtil;
-import com.zakmouf.bluetree.util.PriceUtil;
+import com.zakmouf.bluetree.util.CombinedMeasure;
+import com.zakmouf.bluetree.util.MeasureHolder;
+import com.zakmouf.bluetree.util.PortfolioValuator;
+import com.zakmouf.bluetree.util.PriceHolder;
+import com.zakmouf.bluetree.util.PriceUtils;
 import com.zakmouf.bluetree.util.Randomizer;
-import com.zakmouf.bluetree.util.StatUtil;
 
 @Component
 public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeService {
 
-    private static final int PREVIEW_MAX_LOOPS = 5000;
+    private static final int PREVIEW_BASKET_SIZE = 10;
+
+    private static final int PREVIEW_MAX_LOOPS = 20000;
 
     private static final double BETA_DELTA = 0.1;
-
-    private static final long PREVIEW_MAX_TIME = 60L * 1000L;
 
     private static final int OPTIMIZE_UNSUCCESS = 40000;
 
@@ -40,8 +38,6 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
     private static final int OPTIMIZE_SUCCESS = 300;
 
     @Autowired
-    private PortfolioDao portfolioDao;
-    @Autowired
     private MarketService marketService;
     @Autowired
     private PriceService priceService;
@@ -49,244 +45,117 @@ public class OptimizeServiceImpl extends BaseServiceImpl implements OptimizeServ
     @Override
     public List<Holding> optimize(Portfolio portfolio) {
 
-	logger.info(msgOld("optimize portfolio <{0}>", portfolio));
+	logger.info(msg("optimize portfolio=[%1$s]", portfolio));
 
 	//
 	// read data
 	//
 	Market market = portfolio.getMarket();
 	Stock indice = market.getIndice();
-	List<Stock> initialStocks = marketService.getStocks(market);
+	List<Stock> marketStocks = marketService.getStocks(market);
 	Date fromDate = portfolio.getFromDate();
 	Date toDate = portfolio.getToDate();
 
 	// read indice
 
 	List<Price> indicePrices = priceService.getPrices(indice);
-	indicePrices = PriceUtil.filterBetween(indicePrices, fromDate, toDate);
-	if (indicePrices.size() < 10) {
-	    throw new RuntimeException(msgOld("Indice <{0}> is empty", indice.getSymbol()));
-	}
-	logger.debug(msgOld("Indice <{0}> size <{1}> first <{2}> last <{3}>", indice.getSymbol(), indicePrices.size(),
-		PriceUtil.firstDate(indicePrices), PriceUtil.lastDate(indicePrices)));
+	indicePrices = PriceUtils.filterBetween(indicePrices, fromDate, toDate);
+	logger.info(msg("indice=[%1$s] prices=[%2$d] fromDate=[%3$tF] toDate=[%4$tF]", indice.getSymbol(),
+		indicePrices.size(), fromDate, toDate));
 
-	// correct dates
-	fromDate = PriceUtil.firstDate(indicePrices);
-	toDate = PriceUtil.lastDate(indicePrices);
+	// validate indice prices
+
+	if (indicePrices.size() < 10) {
+	    throw new RuntimeException(msg("indice=[%1$s] prices=[%2$d] fromDate=[%3$tF] toDate=[%4$tF] : needed=[10]",
+		    indice.getSymbol(), indicePrices.size(), fromDate, toDate));
+	}
+
+	// effective from date and to date
+
+	Date effectiveFromDate = PriceUtils.firstDate(indicePrices);
+	Date effectiveToDate = PriceUtils.lastDate(indicePrices);
+	logger.info(msg("fromDate=[%1$tF] : effectiveFromDate=[%2$tF]", fromDate, effectiveFromDate));
+	logger.info(msg("toDate=[%1$tF] : effectiveToDate=[%2$tF]", toDate, effectiveToDate));
+
+	PriceHolder priceHolder = new PriceHolder();
+	priceHolder.addPrices(indice, indicePrices);
 
 	// read stocks
-	List<Stock> stocks = new ArrayList<Stock>();
-	List<List<Price>> stockPricesList = new ArrayList<List<Price>>();
-	for (Stock stock : initialStocks) {
+
+	List<Stock> optimizeStocks = new ArrayList<Stock>();
+	for (Stock stock : marketStocks) {
 	    List<Price> stockPrices = priceService.getPrices(stock);
-	    stockPrices = PriceUtil.filterBetweenInclusive(stockPrices, fromDate, toDate);
-	    if (stockPrices.isEmpty()) {
-		logger.debug(msgOld("Stock <{0}> is empty", stock.getSymbol()));
-	    } else {
-		int diff = PriceUtil.matchPrices(indicePrices, stockPrices);
-		logger.debug(msgOld("Stock <{0}> size <{1}> first <{2}> last <{3}> diff <{4}>", stock.getSymbol(),
-			stockPrices.size(), PriceUtil.firstDate(stockPrices), PriceUtil.lastDate(stockPrices), diff));
-		stocks.add(stock);
-		stockPricesList.add(stockPrices);
+	    stockPrices = PriceUtils.filterBetweenInclusive(stockPrices, effectiveFromDate, effectiveToDate);
+	    logger.info(msg("stock=[%1$s] prices=[%2$d] fromDate=[%3$tF] toDate=[%4$tF]", stock.getSymbol(),
+		    stockPrices.size(), effectiveFromDate, effectiveToDate));
+	    if (!stockPrices.isEmpty()) {
+		optimizeStocks.add(stock);
+		priceHolder.addPrices(stock, stockPrices);
 	    }
 	}
 
-	// less stocks to use
-	logger.info(msgOld("Use {0} / {1} stocks", stocks.size(), initialStocks.size()));
-	if (stocks.size() < 10) {
-	    throw new RuntimeException("Less than 10 stocks match chosen dates");
+	//
+
+	logger.info(msg("marketStocks=[%1$d] optimizeStocks=[%2$d]", marketStocks.size(), optimizeStocks.size()));
+	if (optimizeStocks.size() < 10) {
+	    throw new RuntimeException(msg("marketStocks=[%1$d] optimizeStocks=[%2$d] : needed [10]",
+		    marketStocks.size(), optimizeStocks.size()));
 	}
 
-	// calculate returns
-	Double[] indiceReturns = PriceUtil.calculateReturns(indicePrices);
-	List<Double[]> stockReturnsList = new ArrayList<Double[]>();
-	for (List<Price> stockPrices : stockPricesList) {
-	    Double[] stockReturns = PriceUtil.calculateReturns(stockPrices);
-	    stockReturnsList.add(stockReturns);
-	}
+	//
 
-	Double beta = portfolio.getBeta();
-	Double riskless = market.getRiskless() / 252.0D;
+	Randomizer randomizer = new Randomizer(PREVIEW_BASKET_SIZE, optimizeStocks.size());
+	MeasureHolder measureHolder = new MeasureHolder(market.getRiskless());
+	measureHolder.setIndicePrices(indicePrices);
 
-	// indice properties
-	Double indiceMean = StatUtil.mean(indiceReturns);
-	Double indiceStdev = StatUtil.stdev(indiceReturns);
-	Double indiceSharp = StatUtil.sharp(indiceMean, riskless, indiceStdev);
+	Double ratioMax = null;
+	List<Holding> holdings;
 
-	Integer size = stocks.size();
+	for (int i = 0; i < PREVIEW_MAX_LOOPS; i++) {
 
-	Boolean ratioMaxFound = false;
-	Randomizer randomizer = new Randomizer();
-	Double ratioMax = Double.MIN_VALUE;
+	    int[] keys = randomizer.nextBasket();
 
-	Integer cpt = 0;
-	Long start = System.currentTimeMillis();
+	    holdings = new ArrayList<Holding>();
 
-	while (cpt < PREVIEW_MAX_LOOPS) {
-
-	    if (System.currentTimeMillis() - start > PREVIEW_MAX_TIME) {
-		break;
+	    for (int j = 0; j < keys.length; j++) {
+		Stock stock = optimizeStocks.get(keys[j]);
+		Price firstPrice = priceHolder.getPrice(stock, effectiveFromDate);
+		Double firstValue = firstPrice.getValue();
+		Double quantity = 100.0D / keys.length / firstValue;
+		Holding holding = new Holding(stock);
+		holding.setQuantity(quantity);
+		holdings.add(holding);
 	    }
 
-	    Integer[] keys = randomizer.keys(10, size);
-	    Double[] basketReturns = BasketUtil.calculateReturns(stockReturnsList, keys);
+	    List<Price> portfolioPrices = PortfolioValuator.valuate(indice, holdings, effectiveFromDate,
+		    effectiveToDate, priceHolder);
+	    measureHolder.setPortfolioPrices(portfolioPrices);
 
-	    Double basketMean = StatUtil.mean(basketReturns);
-	    Double basketStdev = StatUtil.stdev(basketReturns);
-	    Double basketSharp = StatUtil.sharp(basketMean, riskless, basketStdev);
-	    Double basketRatio = StatUtil.ratio(indiceSharp, basketSharp);
-	    Double basketBeta = StatUtil.beta(indiceReturns, basketReturns);
+	    CombinedMeasure combinedMeasure = measureHolder.getCombinedMeasure();
+	    Double beta = combinedMeasure.getRegressionMeasure().getBeta();
+	    Double ratio = combinedMeasure.getRegressionMeasure().getDecisionRatio();
 
-	    if (basketBeta >= beta - BETA_DELTA && basketBeta <= beta + BETA_DELTA) {
-		ratioMaxFound = true;
-		if (ratioMax < basketRatio) {
-		    cpt = 0;
-		    ratioMax = basketRatio;
-		    logger.debug(msgOld("Ratio max <{0,number,0.00%}>", ratioMax));
+	    if (beta >= portfolio.getBeta() - BETA_DELTA && beta <= portfolio.getBeta() + BETA_DELTA) {
+		if (ratioMax == null || ratioMax < ratio) {
+		    logger.debug(msg("preview=[%1$5d] : beta=[%2$.5f] ratio=[%3$.5f]", i, beta, ratio * 100.0D));
+		    ratioMax = ratio;
 		}
 	    }
-	    cpt++;
+
 	}
 
-	if (!ratioMaxFound) {
-	    throw new RuntimeException("No ratio found for chosen beta");
+	if (ratioMax == null) {
+	    throw new RuntimeException("ratio max not found");
 	}
+	Double ratioStart = 0.01D * ((int) (ratioMax * 100D + 5.0d));
+	logger.info(msg("ratioMax=[%1$.5f] : ratioStart=[%2$.5f]", ratioMax, ratioStart));
 
 	// correct ratio max
-	ratioMax += 0.05;
-	logger.info(msgOld("Ratio max <{0,number,0.00%}>", ratioMax));
+	// ratioMax += 0.05;
 
 	// max weight
-	Double maxWeight = (1 - Math.exp(-0.08)) / (1 - Math.exp(-0.08 * size));
-	logger.info(msgOld("Max weight <{0,number,0.00%}>", maxWeight));
 
-	Integer[] points = new Integer[size];
-	for (int i = 0; i < size; i++) {
-	    points[i] = 0;
-	}
-	Integer pointTotal = 0;
-
-	randomizer = new Randomizer();
-
-	int success = 0;
-	int unsuccess = 0;
-
-	logger.debug(msgOld("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
-
-	logger.info("Start optimization");
-	start = System.currentTimeMillis();
-
-	while (success < OPTIMIZE_SUCCESS) {
-
-	    if (System.currentTimeMillis() - start > OPTIMIZE_MAX_TIME) {
-		throw new RuntimeException("No portfolio found (time exceed)");
-	    }
-
-	    Integer[] keys = randomizer.keys(5, size);
-	    Double[] baskerReturns = BasketUtil.calculateReturns(stockReturnsList, keys);
-
-	    Double basketMean = StatUtil.mean(baskerReturns);
-	    Double basketStdev = StatUtil.stdev(baskerReturns);
-	    Double basketSharp = StatUtil.sharp(basketMean, riskless, basketStdev);
-	    Double basketRatio = StatUtil.ratio(indiceSharp, basketSharp);
-	    Double basketBeta = StatUtil.beta(indiceReturns, baskerReturns);
-
-	    Boolean weightOk = true;
-	    // check weights after 10% of success
-	    if (success > (OPTIMIZE_SUCCESS / 10)) {
-		for (int i = 0; weightOk && i < keys.length; i++) {
-		    double weight = points[keys[i]] + 1;
-		    weight /= (pointTotal + keys.length);
-		    weightOk = weight < maxWeight;
-		}
-	    }
-
-	    if (weightOk && basketBeta >= beta - BETA_DELTA && basketBeta <= beta + BETA_DELTA
-		    && basketRatio >= ratioMax) {
-
-		for (int i = 0; i < keys.length; i++) {
-		    points[keys[i]] += 1;
-		}
-		pointTotal += keys.length;
-
-		success++;
-		unsuccess = 0;
-		logger.debug(msgOld("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
-	    } else {
-		unsuccess++;
-		if (unsuccess == OPTIMIZE_UNSUCCESS) {
-		    unsuccess = 0;
-		    ratioMax -= 0.005;
-		    logger.debug(msgOld("Ratio <{0,number,0.00%}> Success <{1}>", ratioMax, success));
-		}
-	    }
-
-	}
-	logger.info("Finish optimization");
-
-	List<Holding> positions = new ArrayList<Holding>();
-	for (int i = 0; i < points.length; i++) {
-	    if (points[i] != 0) {
-		Stock stock = stocks.get(i);
-		Double weight = (points[i] + 0.0D) / pointTotal;
-		Holding position = new Holding();
-		position.setStock(stock);
-		position.setWeight(weight);
-		positions.add(position);
-	    }
-	}
-	Collections.sort(positions, new Comparator<Holding>() {
-	    @Override
-	    public int compare(Holding o1, Holding o2) {
-		return o2.getWeight().compareTo(o1.getWeight());
-	    }
-	});
-
-	for (Holding position : positions) {
-	    logger.debug(msgOld("Stock <{0}> Weight <{1,number,0.00%}>", position.getStock().getSymbol(),
-		    position.getWeight()));
-	}
-
-	size = portfolio.getSize().intValue();
-
-	if (positions.size() > size) {
-
-	    Holding position = (Holding) positions.get(size - 1);
-	    double weight = position.getWeight().doubleValue();
-
-	    Iterator<Holding> iterator = positions.iterator();
-	    while (iterator.hasNext()) {
-		position = iterator.next();
-		if (position.getWeight().doubleValue() < weight) {
-		    iterator.remove();
-		}
-	    }
-
-	    double total = 0.0;
-	    iterator = positions.iterator();
-	    while (iterator.hasNext()) {
-		position = iterator.next();
-		total += position.getWeight().doubleValue();
-	    }
-
-	    iterator = positions.iterator();
-	    while (iterator.hasNext()) {
-		position = iterator.next();
-		weight = position.getWeight().doubleValue() / total;
-		position.setWeight(new Double(weight));
-	    }
-
-	}
-
-	for (Holding position : positions) {
-	    logger.debug(msgOld("Stock <{0}> Weight <{1,number,0.00%}>", position.getStock().getSymbol(),
-		    position.getWeight()));
-	}
-
-	portfolio.setFromDate(fromDate);
-	portfolio.setToDate(toDate);
-
-	return positions;
+	return new ArrayList<Holding>();
 
     }
 

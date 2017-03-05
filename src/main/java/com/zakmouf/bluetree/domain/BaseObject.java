@@ -10,8 +10,12 @@ public abstract class BaseObject implements Serializable {
     public BaseObject() {
 
     }
+    protected String msg (String pattern, Object... arguments) {
+	return String.format(pattern, arguments);
+    }
 
-    protected String msg(String pattern, Object... arguments) {
+    @Deprecated
+    protected String msgOld(String pattern, Object... arguments) {
 	return MessageFormat.format(pattern, arguments);
     }
 

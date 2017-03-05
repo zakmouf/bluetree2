@@ -40,7 +40,7 @@ public class Price extends BaseObject implements Comparable<Price> {
 
     @Override
     public String toString() {
-	return msg("date={0,date,yyyy-MM-dd},value={1,number,0.00}", date, value);
+	return msg("date=%1$tF,value=%2$.2f", date, value);
     }
 
     @Override

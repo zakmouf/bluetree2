@@ -8,6 +8,16 @@ public class Holding extends BaseObject {
 
     private Double weight;
 
+    private Double quantity;
+
+    public Holding() {
+
+    }
+
+    public Holding(Stock stock) {
+	setStock(stock);
+    }
+
     public Stock getStock() {
 	return stock;
     }
@@ -24,9 +34,17 @@ public class Holding extends BaseObject {
 	this.weight = weight;
     }
 
+    public Double getQuantity() {
+	return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+	this.quantity = quantity;
+    }
+
     @Override
     public String toString() {
-	return msg("[{0},{1}]", stock, weight);
+	return msg("weight=%1$.2f,stock=[%2$s]", weight * 100.0D, stock);
     }
 
 }

@@ -1,29 +1,37 @@
 package com.zakmouf.bluetree.util;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Randomizer {
 
-    private Random random;
+    private Random random = new Random(System.currentTimeMillis());
 
-    public Randomizer() {
-	random = new Random();
+    private int basketSize;
+    private int elementCount;
+
+    public Randomizer(int basketSize, int elementCount) {
+	this.basketSize = basketSize;
+	this.elementCount = elementCount;
     }
 
-    public Integer[] keys(Integer length, Integer max) {
-	Integer[] keys = new Integer[length];
+    public int[] nextBasket() {
+	int[] keys = new int[basketSize];
 	int i = 0;
-	while (i < length) {
-	    keys[i] = random.nextInt(max);
-	    for (int j = 0; keys[i] != -1 && j < i; j++) {
-		if (keys[j] == keys[i]) {
-		    keys[i] = -1;
-		}
+	while (i < keys.length) {
+	    int key = random.nextInt(elementCount);
+	    boolean found = false;
+	    int j = i - 1;
+	    while (j >= 0 && !found) {
+		found = (keys[j] == key);
+		j--;
 	    }
-	    if (keys[i] != -1) {
+	    if (!found) {
+		keys[i] = key;
 		i++;
 	    }
 	}
+	Arrays.sort(keys);
 	return keys;
     }
 
