@@ -15,8 +15,6 @@ public interface PortfolioDao {
 
     void insert(Portfolio portfolio);
 
-    void update(Portfolio portfolio);
-
     void delete(Portfolio portfolio);
 
     List<Holding> findHoldings(Portfolio portfolio);

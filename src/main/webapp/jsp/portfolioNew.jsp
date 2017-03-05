@@ -20,7 +20,7 @@
     <tr>
       <td>Market :</td>
       <td><form:select path="marketId">
-          <c:forEach items="${form.markets}" var="market">
+          <c:forEach items="${markets}" var="market">
             <form:option value="${market.id}">
               <c:out value="${market.name}" />
             </form:option>

@@ -61,9 +61,6 @@ public class MarketController extends BaseController {
     public ModelAndView whenNew() {
 	MarketForm form = new MarketForm();
 	List<Stock> stocks = stockService.getStocks();
-	if (!stocks.isEmpty()) {
-	    form.setIndiceId(stocks.get(0).getId());
-	}
 	ModelAndView mav = new ModelAndView("marketNew");
 	mav.getModel().put("stocks", stocks);
 	mav.getModel().put("form", form);

@@ -1,32 +1,21 @@
 package com.zakmouf.bluetree.web;
 
-import java.util.List;
-
-import com.zakmouf.bluetree.domain.Market;
-
 public class PortfolioForm {
 
-    private List<Market> markets;
-
-    public List<Market> getMarkets() {
-	return markets;
-    }
-
-    public void setMarkets(List<Market> markets) {
-	this.markets = markets;
-    }
-
     private String name;
-
     private Long marketId;
-
     private String fromDateStr;
-
     private String toDateStr;
-
     private Double beta;
-
     private Integer size;
+
+    public PortfolioForm() {
+	name = "name";
+	fromDateStr = "2013-01-01";
+	toDateStr = "2014-12-31";
+	beta = 0.8D;
+	size = 10;
+    }
 
     public String getName() {
 	return name;

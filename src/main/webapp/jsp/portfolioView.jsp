@@ -6,9 +6,9 @@
 
 <table>
   <tr>
-    <td><a href="<c:url value="/portfolio/delete?portfolio=${param.portfolio}"/>">Delete</a></td>
-    <td><a href="<c:url value="/portfolio/optimize?portfolio=${param.portfolio}"/>">Optimize</a></td>
-    <td><a href="<c:url value="/portfolio/project?portfolio=${param.portfolio}"/>">Project</a></td>
+    <td><a href="<c:url value="/portfolio/${portfolio.id}/delete"/>">Delete</a></td>
+    <td><a href="<c:url value="/portfolio/${portfolio.id}/optimize"/>">Optimize</a></td>
+    <td><a href="<c:url value="/portfolio/${portfolio.id}/project"/>">Project</a></td>
   </tr>
 </table>
 
@@ -19,7 +19,7 @@
   </tr>
   <tr>
     <td>Market :</td>
-    <td><c:out value="${market.name}" /></td>
+    <td><a href="<c:url value="/market/${portfolio.market.id}/view"/>"> <c:out value="${portfolio.market.name}" /></a></td>
   </tr>
   <tr>
     <td>From date :</td>
@@ -39,10 +39,23 @@
   </tr>
 </table>
 
-<display:table name="positions">
-  <display:column property="stock.symbol" title="Symbol" />
-  <display:column property="stock.name" title="Name" />
-  <display:column property="weight" title="Weight" format="{0,number,0.00%}" />
-</display:table>
+<table>
+  <tr>
+    <td>Holdings</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Weight</th>
+  </tr>
+  <c:forEach items="${holdings}" var="holding">
+    <tr>
+      <td><a href="<c:url value="/stock/${holding.stock.id}/view"/>"><c:out value="${holding.stock.symbol}" /></a> (<c:out value="${holding.stock.name}" />)</td>
+      <td><fmt:formatNumber value="${holding.weight}" pattern="0.00%" /></td>
+    </tr>
+  </c:forEach>
+</table>
 
 <c:import url="/jsp/common/footer.jsp" />

@@ -38,7 +38,7 @@ public class PortfolioDaoImpl extends BaseDaoImpl implements PortfolioDao {
     @Override
     @Transactional(readOnly = true)
     public List<Portfolio> findAll() {
-	String sql = "select * from portfolios order by portfolio_name";
+	String sql = "select p.* from v_portfolio p order by p.portfolio_name";
 	Object[] args = {};
 	int[] argTypes = {};
 	List<Portfolio> portfolios = queryForList(sql, args, argTypes, new PortfolioRowMapper());
@@ -59,17 +59,6 @@ public class PortfolioDaoImpl extends BaseDaoImpl implements PortfolioDao {
 
     @Override
     @Transactional
-    public void update(Portfolio portfolio) {
-	String sql = "update t_portfolio set f_name = ?, f_from_date = ?, f_to_date = ?, f_beta = ?, f_size = ?, market_id = ? where f_id = ?";
-	Object[] args = { portfolio.getName(), portfolio.getFromDate(), portfolio.getToDate(), portfolio.getBeta(),
-		portfolio.getSize(), portfolio.getMarket().getId(), portfolio.getId() };
-	int[] argTypes = { Types.VARCHAR, Types.DATE, Types.DATE, Types.NUMERIC, Types.NUMERIC, Types.NUMERIC,
-		Types.NUMERIC };
-	update(sql, args, argTypes);
-    }
-
-    @Override
-    @Transactional
     public void delete(Portfolio portfolio) {
 	String sql = "delete from t_portfolio where f_id = ?";
 	Object[] args = { portfolio.getId() };
@@ -79,7 +68,7 @@ public class PortfolioDaoImpl extends BaseDaoImpl implements PortfolioDao {
 
     @Override
     public List<Holding> findHoldings(Portfolio portfolio) {
-	String sql = "select h.* from v_holding where h.portfolio_id = ? order by h.holding_weight desc";
+	String sql = "select h.* from v_holding h where h.portfolio_id = ? order by h.holding_weight desc";
 	Object[] args = { portfolio.getId() };
 	int[] argTypes = { Types.NUMERIC };
 	return queryForList(sql, args, argTypes, new HoldingRowMapper());

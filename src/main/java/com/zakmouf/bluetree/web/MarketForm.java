@@ -3,9 +3,7 @@ package com.zakmouf.bluetree.web;
 public class MarketForm {
 
     private String name;
-
     private Double riskless;
-
     private Long indiceId;
 
     public MarketForm() {

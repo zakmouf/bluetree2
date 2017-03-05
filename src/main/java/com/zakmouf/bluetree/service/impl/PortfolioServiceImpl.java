@@ -44,11 +44,7 @@ public class PortfolioServiceImpl extends BaseServiceImpl implements PortfolioSe
 	if (portfolio.getId() == null) {
 	    logger.info(msg("insert portfolio=[%1$s]", portfolio));
 	    portfolioDao.insert(portfolio);
-	} else {
-	    logger.info(msg("update portfolio=[%1$s]", portfolio));
-	    portfolioDao.update(portfolio);
 	}
-
     }
 
     @Override
@@ -68,7 +64,12 @@ public class PortfolioServiceImpl extends BaseServiceImpl implements PortfolioSe
     @Override
     @Transactional
     public void setHoldings(Portfolio portfolio, List<Holding> holdings) {
-	// TODO Auto-generated method stub
+	logger.info(msg("delete all holdings for portfolio=[%1$s]", portfolio));
+	portfolioDao.deleteAllHoldings(portfolio);
+	for (Holding holding : holdings) {
+	    logger.info(msg("insert holding=[%1$s] for portfolio=[%2$s]", holding, portfolio));
+	    portfolioDao.insertHolding(portfolio, holding);
+	}
 
     }
 
