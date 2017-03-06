@@ -6,11 +6,13 @@ import java.awt.Font;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -23,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zakmouf.bluetree.domain.Price;
-import com.zakmouf.bluetree.util.DateUtil;
 
 public class BaseController {
 
@@ -53,7 +54,7 @@ public class BaseController {
 
 	if (prices.isEmpty()) {
 	    Price price = new Price();
-	    price.setDate(DateUtil.today());
+	    price.setDate(DateUtils.truncate(new Date(), Calendar.DATE));
 	    price.setValue(0.0D);
 	    prices.add(price);
 	}

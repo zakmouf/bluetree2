@@ -1,7 +1,6 @@
 package com.zakmouf.bluetree.domain;
 
 import java.io.Serializable;
-import java.text.MessageFormat;
 
 public abstract class BaseObject implements Serializable {
 
@@ -10,13 +9,9 @@ public abstract class BaseObject implements Serializable {
     public BaseObject() {
 
     }
-    protected String msg (String pattern, Object... arguments) {
-	return String.format(pattern, arguments);
-    }
 
-    @Deprecated
-    protected String msgOld(String pattern, Object... arguments) {
-	return MessageFormat.format(pattern, arguments);
+    protected String msg(String pattern, Object... arguments) {
+	return String.format(pattern, arguments);
     }
 
 }

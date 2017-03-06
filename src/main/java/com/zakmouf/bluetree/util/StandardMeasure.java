@@ -3,9 +3,9 @@ package com.zakmouf.bluetree.util;
 import com.zakmouf.bluetree.domain.BaseObject;
 
 public class StandardMeasure extends BaseObject {
- 
+
     private static final long serialVersionUID = 1L;
-    
+
     private Double averageReturn;
     private Double standardDeviation;
     private Double sharpRatio;
@@ -36,8 +36,8 @@ public class StandardMeasure extends BaseObject {
 
     @Override
     public String toString() {
-	return msg("averageReturn={0,number,0.0000%},standardDeviation={1,number,0.0000%},sharpRatio={2,number,0.0000}",
-		averageReturn, standardDeviation, sharpRatio);
+	return msg("averageReturn=[%1$.5f],standardDeviation=[%2$.5f],sharpRatio=[%3$.5f]", averageReturn * 100D,
+		standardDeviation * 100D, sharpRatio);
     }
 
 }

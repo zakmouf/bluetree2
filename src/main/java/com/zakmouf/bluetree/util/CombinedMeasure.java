@@ -36,7 +36,7 @@ public class CombinedMeasure extends BaseObject {
 
     @Override
     public String toString() {
-	return msg("\n  portfolio=[{0}]\n  indice=[{1}]\n  regression=[{2}]\n", portfolioMeasure, indiceMeasure,
+	return msg("\n  portfolio=[%1$s]\n  indice=[%2$s]\n  regression=[%3$s]\n", portfolioMeasure, indiceMeasure,
 		regressionMeasure);
     }
 

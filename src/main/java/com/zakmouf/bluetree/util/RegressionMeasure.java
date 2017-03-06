@@ -73,8 +73,8 @@ public class RegressionMeasure extends BaseObject {
     @Override
     public String toString() {
 	return msg(
-		"decisionRatio={0,number,0.0000%},alpha={1,number,0.0000%},beta={2,number,0.0000},alphaBear={3,number,0.0000%},betaBear={4,number,0.0000},alphaBull={5,number,0.0000%},betaBull={6,number,0.0000}",
-		decisionRatio, alpha, beta, alphaBear, betaBear, alphaBull, betaBull);
+		"decisionRatio=[%1$.5f],alpha=[%2$.5f],beta=[%3$.5f],alphaBear=[%4$.5f],betaBear=[%5$.5f],alphaBull=[%6$.5f],betaBull=[%7$.5f]",
+		decisionRatio * 100D, alpha * 100D, beta, alphaBear * 100D, betaBear, alphaBull * 100D, betaBull);
     }
 
 }
