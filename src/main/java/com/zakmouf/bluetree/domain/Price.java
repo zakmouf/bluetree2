@@ -14,48 +14,48 @@ public class Price extends BaseObject implements Comparable<Price> {
     }
 
     public Price(Date date) {
-	setDate(date);
+        setDate(date);
     }
 
     public Price(Date date, Double value) {
-	setDate(date);
-	setValue(value);
+        setDate(date);
+        setValue(value);
     }
 
     public Date getDate() {
-	return date;
+        return date;
     }
 
     public void setDate(Date date) {
-	this.date = date;
+        this.date = date;
     }
 
     public Double getValue() {
-	return value;
+        return value;
     }
 
     public void setValue(Double value) {
-	this.value = value;
+        this.value = value;
     }
 
     @Override
     public String toString() {
-	return msg("date=%1$tF,value=%2$.2f", date, value);
+        return msg("date=%1$tF,value=%2$.2f", date, value);
     }
 
     @Override
     public boolean equals(Object other) {
-	return date.equals(((Price) other).getDate());
+        return date.equals(((Price) other).getDate());
     }
 
     @Override
     public int compareTo(Price other) {
-	return date.compareTo(other.getDate());
+        return date.compareTo(other.getDate());
     }
 
     @Override
     public int hashCode() {
-	return date.hashCode();
+        return date.hashCode();
     }
 
 }

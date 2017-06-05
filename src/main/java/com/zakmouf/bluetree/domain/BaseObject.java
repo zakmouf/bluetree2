@@ -11,7 +11,7 @@ public abstract class BaseObject implements Serializable {
     }
 
     protected String msg(String pattern, Object... arguments) {
-	return String.format(pattern, arguments);
+        return String.format(pattern, arguments);
     }
 
 }

@@ -11,8 +11,8 @@ public class HomeController extends BaseController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView gtHome() {
-	ModelAndView mav = new ModelAndView("home");
-	return mav;
+        ModelAndView mav = new ModelAndView("home");
+        return mav;
     }
 
 }

@@ -1,9 +1,9 @@
 package com.zakmouf.bluetree.dao;
 
-import java.util.List;
-
 import com.zakmouf.bluetree.domain.Holding;
 import com.zakmouf.bluetree.domain.Portfolio;
+
+import java.util.List;
 
 public interface PortfolioDao {
 

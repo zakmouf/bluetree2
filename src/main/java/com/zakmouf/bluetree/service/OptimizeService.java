@@ -1,9 +1,9 @@
 package com.zakmouf.bluetree.service;
 
-import java.util.List;
-
-import com.zakmouf.bluetree.domain.Portfolio;
 import com.zakmouf.bluetree.domain.Holding;
+import com.zakmouf.bluetree.domain.Portfolio;
+
+import java.util.List;
 
 public interface OptimizeService {
 

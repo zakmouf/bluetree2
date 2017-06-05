@@ -23,60 +23,60 @@ public class Portfolio extends BaseEntity {
     }
 
     public Portfolio(String name) {
-	setName(name);
+        setName(name);
     }
 
     public Double getBeta() {
-	return beta;
+        return beta;
     }
 
     public void setBeta(Double beta) {
-	this.beta = beta;
+        this.beta = beta;
     }
 
     public Date getFromDate() {
-	return fromDate;
+        return fromDate;
     }
 
     public void setFromDate(Date fromDate) {
-	this.fromDate = fromDate;
+        this.fromDate = fromDate;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public Integer getSize() {
-	return size;
+        return size;
     }
 
     public void setSize(Integer size) {
-	this.size = size;
+        this.size = size;
     }
 
     public Date getToDate() {
-	return toDate;
+        return toDate;
     }
 
     public void setToDate(Date toDate) {
-	this.toDate = toDate;
+        this.toDate = toDate;
     }
 
     public Market getMarket() {
-	return market;
+        return market;
     }
 
     public void setMarket(Market market) {
-	this.market = market;
+        this.market = market;
     }
 
     @Override
     public String toString() {
-	return msg("id=%1$d,name=%2$s", id, name);
+        return msg("id=%1$d,name=%2$s", id, name);
     }
 
 }

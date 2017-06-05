@@ -11,33 +11,33 @@ public class StandardMeasure extends BaseObject {
     private Double sharpRatio;
 
     public Double getAverageReturn() {
-	return averageReturn;
+        return averageReturn;
     }
 
     public void setAverageReturn(Double averageReturn) {
-	this.averageReturn = averageReturn;
+        this.averageReturn = averageReturn;
     }
 
     public Double getStandardDeviation() {
-	return standardDeviation;
+        return standardDeviation;
     }
 
     public void setStandardDeviation(Double standardDeviation) {
-	this.standardDeviation = standardDeviation;
+        this.standardDeviation = standardDeviation;
     }
 
     public Double getSharpRatio() {
-	return sharpRatio;
+        return sharpRatio;
     }
 
     public void setSharpRatio(Double sharpRatio) {
-	this.sharpRatio = sharpRatio;
+        this.sharpRatio = sharpRatio;
     }
 
     @Override
     public String toString() {
-	return msg("averageReturn=[%1$.5f],standardDeviation=[%2$.5f],sharpRatio=[%3$.5f]", averageReturn * 100D,
-		standardDeviation * 100D, sharpRatio);
+        return msg("averageReturn=[%1$.5f],standardDeviation=[%2$.5f],sharpRatio=[%3$.5f]", averageReturn * 100D,
+                standardDeviation * 100D, sharpRatio);
     }
 
 }

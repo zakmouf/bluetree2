@@ -15,36 +15,36 @@ public class Market extends BaseEntity {
     }
 
     public Market(String name) {
-	setName(name);
+        setName(name);
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public Double getRiskless() {
-	return riskless;
+        return riskless;
     }
 
     public void setRiskless(Double riskless) {
-	this.riskless = riskless;
+        this.riskless = riskless;
     }
 
     public Stock getIndice() {
-	return indice;
+        return indice;
     }
 
     public void setIndice(Stock indice) {
-	this.indice = indice;
+        this.indice = indice;
     }
 
     @Override
     public String toString() {
-	return msg("id=%1$d,name=%2$s,riskless=%3$.2f", id, name, riskless);
+        return msg("id=%1$d,name=%2$s,riskless=%3$.2f", id, name, riskless);
     }
 
 }

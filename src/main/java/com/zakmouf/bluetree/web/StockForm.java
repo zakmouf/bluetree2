@@ -6,23 +6,23 @@ public class StockForm {
     private String name;
 
     public StockForm() {
-	symbol = "symbol";
+        symbol = "symbol";
     }
 
     public String getSymbol() {
-	return symbol;
+        return symbol;
     }
 
     public void setSymbol(String symbol) {
-	this.symbol = symbol;
+        this.symbol = symbol;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
 }

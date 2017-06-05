@@ -10,59 +10,59 @@ public class PortfolioForm {
     private Integer size;
 
     public PortfolioForm() {
-	name = "name";
-	fromDateStr = "2013-01-01";
-	toDateStr = "2014-12-31";
-	beta = 0.8D;
-	size = 10;
+        name = "name";
+        fromDateStr = "2013-01-01";
+        toDateStr = "2014-12-31";
+        beta = 0.8D;
+        size = 10;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public Long getMarketId() {
-	return marketId;
+        return marketId;
     }
 
     public void setMarketId(Long marketId) {
-	this.marketId = marketId;
+        this.marketId = marketId;
     }
 
     public String getFromDateStr() {
-	return fromDateStr;
+        return fromDateStr;
     }
 
     public void setFromDateStr(String fromDateStr) {
-	this.fromDateStr = fromDateStr;
+        this.fromDateStr = fromDateStr;
     }
 
     public String getToDateStr() {
-	return toDateStr;
+        return toDateStr;
     }
 
     public void setToDateStr(String toDateStr) {
-	this.toDateStr = toDateStr;
+        this.toDateStr = toDateStr;
     }
 
     public Double getBeta() {
-	return beta;
+        return beta;
     }
 
     public void setBeta(Double beta) {
-	this.beta = beta;
+        this.beta = beta;
     }
 
     public Integer getSize() {
-	return size;
+        return size;
     }
 
     public void setSize(Integer size) {
-	this.size = size;
+        this.size = size;
     }
 
 }

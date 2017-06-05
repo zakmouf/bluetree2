@@ -1,9 +1,9 @@
 package com.zakmouf.bluetree.service;
 
-import java.util.List;
-
 import com.zakmouf.bluetree.domain.Market;
 import com.zakmouf.bluetree.domain.Stock;
+
+import java.util.List;
 
 public interface MarketService {
 

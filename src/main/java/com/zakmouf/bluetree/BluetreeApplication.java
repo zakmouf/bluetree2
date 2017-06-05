@@ -8,13 +8,13 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 @SpringBootApplication
 public class BluetreeApplication extends SpringBootServletInitializer {
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-	return application.sources(BluetreeApplication.class);
+    public static void main(String[] args) {
+        SpringApplication.run(BluetreeApplication.class, args);
     }
 
-    public static void main(String[] args) {
-	SpringApplication.run(BluetreeApplication.class, args);
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(BluetreeApplication.class);
     }
 
 }
